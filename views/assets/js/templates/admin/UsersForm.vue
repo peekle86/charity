@@ -13,10 +13,6 @@
                                 <b-form-group label="Name:" label-for="input-2">
                                     <b-form-input v-model="item.first_name" placeholder="Enter name" required></b-form-input>
                                 </b-form-group>
-                                <b-form-group label="AnotherName:" label-for="input-2">
-                                    <b-form-input v-model="item.last_name" placeholder="Enter name" required></b-form-input>
-                                </b-form-group>
-
                                 
                                 <b-form-group  label="Email:" label-for="input-2">
                                     <b-form-input v-model="item.email" placeholder="Enter email" required></b-form-input>
