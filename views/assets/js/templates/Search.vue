@@ -15,7 +15,7 @@
             </b-nav-form>
           </b-navbar-nav>
           <b-navbar-nav class="menu_main">
-            <b-nav-item v-for="(page) in pages" v-on:click="open_page(page.slug)"  v-bind:href="'/'+ page.slug">{{ page.title }}</b-nav-item>
+            <b-nav-item v-for="(page) in pages" v-on:click="open_page(page.slug)"  v-bind:href="'/'+ page.slug" v-bind:key="page.id">{{ page.title }}</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
