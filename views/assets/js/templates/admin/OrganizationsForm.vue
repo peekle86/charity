@@ -20,7 +20,7 @@
                                 </b-form-group>
     
                                 <b-form-group label="Description:" label-for="input-2">
-                                    <b-form-input v-model="item.description" placeholder="Enter description" required></b-form-input>
+                                  <ckeditor :editor="editor" v-model="item.description" placeholder="Enter description" required></ckeditor>
                                 </b-form-group>
                                 <b-form-group label="Url:" label-for="input-2">
                                     <b-form-input v-model="item.url" placeholder="Enter url" required></b-form-input>
@@ -60,6 +60,8 @@
 
 <script>
 import SideBar from "@ad/SideBar.vue";
+import CKEditor from 'ckeditor4-vue';
+
 
 export default {
     name: "Organization",
@@ -79,7 +81,8 @@ export default {
         },
         categories: null,
         show_message: false,
-        message: 'Saved'
+        message: 'Saved',
+        editor: CKEditor,
     }),
     computed: {
         hasImage() {

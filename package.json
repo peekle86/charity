@@ -6,6 +6,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "bootstrap-vue": "^2.21.2",
+    "ckeditor4-vue": "^2.2.0",
     "lodash": "^4.17.21",
     "vue": "^2.6.11",
     "vue-anka-cropper": "^1.1.0",

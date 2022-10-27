@@ -13,6 +13,8 @@ import VueConfirmDialog from 'vue-confirm-dialog'
 // Vue.component('b-collapse', BCollapse)
 import VueMeta from 'vue-meta'
 Vue.use(VueMeta)
+import CKEditor from 'ckeditor4-vue';
+
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
@@ -27,6 +29,8 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VueAxios, axios)
 Vue.use(VueConfirmDialog);
+Vue.use( CKEditor );
+
 
 var VueCookie = require('vue-cookie');
 Vue.use(VueCookie);
