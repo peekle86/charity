@@ -29,8 +29,7 @@
                                 style="max-width: 20rem;"
                                 class="mb-2 ml-2 org_card"
                             >
-                                <b-card-text>
-                                    {{ org.description }}
+                                <b-card-text v-html="org.description">
                                 </b-card-text>
 
                                 <b-button v-on:click="changeSupport(org.id)" href="#" variant="primary">Select for support</b-button>
