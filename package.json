@@ -1,0 +1,42 @@
+{
+  "name": "webpack",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.21.4",
+    "bootstrap-vue": "^2.21.2",
+    "lodash": "^4.17.21",
+    "vue": "^2.6.11",
+    "vue-anka-cropper": "^1.1.0",
+    "vue-axios": "^3.2.5",
+    "vue-confirm-dialog": "^1.0.2",
+    "vue-cookie": "^1.1.4",
+    "vue-meta": "^2.4.0",
+    "vue-router": "^3.5.2",
+    "vuedraggable": "^2.24.3",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.4.2",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^10.0.2",
+    "vue-loader": "^15.9.0",
+    "vue-particles": "^1.0.9",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "dev": "webpack --mode=development --progress",
+    "watch": "webpack --mode=development --watch --progress",
+    "production": "webpack --mode=production --progress"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
