@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\API\Adgoal;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -65,6 +66,13 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+//        $adgoal = new Adgoal();
+//        $adgoal->collect(20);
+//
+//        echo 'Було додано: ' . $adgoal->added_count . ' нових посилань/магазинів'
+//            . PHP_EOL
+//            . 'Пропущено по причині існування в базі: ' . $adgoal->exists_count;
+
        return $this->render('index');
     }
 

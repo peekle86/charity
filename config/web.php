@@ -143,6 +143,7 @@ $config = [
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'lang' ],
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'link' ],
 
+                'partners' => 'partner/get',
             ],
         ],
     ],

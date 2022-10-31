@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Link;
 use schallschlucker\simplecms\controllers\backend\SettingsAndMaintenanceController;
 use Yii;
 use yii\filters\AccessControl;

@@ -20,6 +20,15 @@ use Yii;
  */
 class Link extends \yii\db\ActiveRecord
 {
+
+    const PARTNER_ADGOAL = 1;
+    const PARTNER_ADMITAD = 2;
+
+    const ALL_PARTNERS = [
+        self::PARTNER_ADGOAL => 'Adgoal',
+        self::PARTNER_ADMITAD => 'Admitad'
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -67,4 +76,20 @@ class Link extends \yii\db\ActiveRecord
     {
         return new LinkQuery(get_called_class());
     }
+
+    public function getDomains()
+    {
+        return $this->hasMany(LinkDomain::class, ['link_id' => 'id']);
+    }
+
+    public function getActiveDomain()
+    {
+        return $this->getDomains()->where(['active' => 1])->limit(1)->one();
+    }
+
+    public function hasDomain($domain)
+    {
+        return (bool) $this->getDomains()->where(['name' => $domain])->count();
+    }
+
 }

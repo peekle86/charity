@@ -11,7 +11,41 @@
             <div class="row">
                 <div class="dashboard-body">
                     <div class="container">
+                      <b-alert
+                          :show="dismissCountDown"
+                          dismissible
+                          variant="success"
+                          @dismissed="dismissCountDown=0"
+                          @dismiss-count-down="countDownChanged"
+                      >
+                        Було додано: {{ importResult.added }}  нових мерчантів. Пропущено по причині існування в базі: {{ importResult.exists }}
+                      </b-alert>
+
                         <div class="col-xl-12 d-flex justify-content-end">
+                            <b-button class="mx-2" v-b-modal.importModal>Імпорт</b-button>
+
+                            <b-modal id="importModal" title="Імпорт від партнерів" @ok="partner_import" :ok-disabled="submitButtonDisabled">
+                              <b-form @submit.prevent.stop="partner_import">
+
+                                <b-form-group label="Партнер:" label-for="input-2">
+                                  <b-form-select v-model="importModel.partner_id" :options="importModelOptions" required></b-form-select>
+                                </b-form-group>
+
+
+                                <b-row class="my-1">
+                                  <b-col sm="6">
+                                      <label for="importFormCount">Кількість мерчантів::</label>
+                                      <b-form-input id="importFormCount" v-model="importModel.count" placeholder="" type="number"></b-form-input>
+                                  </b-col>
+                                  <b-col sm="6">
+                                      <label for="importFormOffset">Пропустити::</label>
+                                      <b-form-input id="importFormOffset" v-model="importModel.offset" placeholder="" type="number"></b-form-input>
+                                  </b-col>
+                                </b-row>
+
+                              </b-form>
+                            </b-modal>
+
                             <b-button v-on:click="add_item">New Ad</b-button>
                         </div>
                         
@@ -62,10 +96,24 @@ export default {
     data: () => ({
         items: null,
         fields: ['ID', 'Title','Target Domain', 'Image', '', 'Active'],
+        importModel: {
+            partner_id: null,
+            count: 10,
+            offset: 0
+        },
+        importModelOptions: null,
+        submitButtonDisabled: false,
+        dismissSecs: 10,
+        dismissCountDown: 0,
+        importResult: {
+          added: 0,
+          exists: 0
+        },
     }),
     computed: {},
     mounted() {
         this.reload();
+        this.get_partners()
     },
     filters: {},
     methods: {
@@ -110,7 +158,37 @@ export default {
         edit_item: function (id) {
             this.$router.push('/ads/edit/'+id);
             
-        }
+        },
+
+        get_partners: function () {
+          Vue.axios
+              .get('/partners')
+              .then(res => (this.importModelOptions = res.data));
+        },
+
+        partner_import: function (bvModalEvent) {
+          bvModalEvent.preventDefault();
+          this.submitButtonDisabled = true
+
+          Vue.axios
+              .post('/partner/import', this.importModel)
+              .then(res => {
+                  this.reload()
+                  this.dismissCountDown = this.dismissSecs
+                  this.importResult = res.data
+                  this.$nextTick(() => {
+                      this.$bvModal.hide('importModal')
+                  })
+              })
+              .finally(() => {
+                  this.submitButtonDisabled = false
+              })
+        },
+
+        countDownChanged(dismissCountDown) {
+          this.dismissCountDown = dismissCountDown
+        },
+
     },
     components: {
         SideBar,

@@ -8,7 +8,7 @@ return [
 
     'dsn' => 'mysql:host=localhost;dbname=charity',
     'username' => 'root',
-    'password' => 'root',
+    'password' => '',
     'charset' => 'utf8',
 
     // Schema cache options (for production environment)
