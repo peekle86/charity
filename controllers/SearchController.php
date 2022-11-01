@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\LinkDomain;
 use app\models\User;
 use app\models\Log;
 use app\models\Link;
@@ -150,16 +151,51 @@ class SearchController extends Controller {
 
             $ads = Link::find()->all();
 
+            $links = [];
+            $link = null;
+
             foreach ($res->data['items'] as $result) {
-                foreach ($ads as $ad) {
-//                    echo "<pre>";
-//                        print_r($ad['target_domain']);
-//                        print_r($result['displayLink']);
-//                    echo "</pre>";
-                    if (stristr(  $result['displayLink'], $ad['target_domain'])) {
-                        $link =  $ad;
+//                $target_domain = parse_url($result['link']);
+//                $target_domain = str_replace('www.', '', $target_domain['host']););
+                $target_domain = str_replace('www.', '', $result['displayLink']);
+
+                if (!$link) {
+                    $domain = LinkDomain::find()
+                        ->where(['active' => 1])
+                        ->andWhere(['like', 'name', '%'.$target_domain.'%', false])
+                        ->limit(1)
+                        ->one();
+
+                    $link = $domain->link;
+//                    $link = Link::find()
+//                        ->joinWith('domains')
+//                        ->where(['link.active' => 1])
+//                        ->where(['like', 'link_domain.name', '%'.$target_domain.'%'])
+//                        ->limit(1)
+//                        ->one();
+                }
+
+                if ($link) {
+                    $issetLink = false;
+                    foreach ($links as $setLink) {
+                        if ($setLink->id == $link->id) {
+                            $issetLink = true;
+                        }
+                    }
+                    if (!$issetLink) {
+                        $links[] = $link;
                     }
                 }
+
+//                foreach ($ads as $ad) {
+////                    echo "<pre>";
+////                        print_r($ad['target_domain']);
+////                        print_r($result['displayLink']);
+////                    echo "</pre>";
+//                    if (stristr(  $result['displayLink'], $ad['target_domain'])) {
+//                        $link =  $ad;
+//                    }
+//                }
 
             }
 

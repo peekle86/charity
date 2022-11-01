@@ -16,19 +16,19 @@
                                 <b-form-group label="Title:" label-for="input-2">
                                     <b-form-input v-model="item.title" placeholder="" required></b-form-input>
                                 </b-form-group>
-                                <b-form-group label="Target domain (without http:// ):" label-for="input-2">
-                                    <b-form-input v-model="item.target_domain" placeholder="" required></b-form-input>
-                                </b-form-group>
+<!--                                <b-form-group label="Target domain (without http:// ):" label-for="input-2">-->
+<!--                                    <b-form-input v-model="item.target_domain" placeholder="" required></b-form-input>-->
+<!--                                </b-form-group>-->
                                 <b-form-group label="Text:" label-for="input-2">
-                                    <b-form-input v-model="item.text" placeholder="" required></b-form-input>
+                                    <b-form-input v-model="item.text" placeholder=""></b-form-input>
                                 </b-form-group>
                                 <b-form-group label="Call to action:" label-for="input-2">
                                     <b-form-input v-model="item.call_to_action" placeholder="" required></b-form-input>
                                 </b-form-group>
 
-                                <b-form-group label="URL:" label-for="input-2">
-                                    <b-form-input v-model="item.url" placeholder="" required></b-form-input>
-                                </b-form-group>
+<!--                                <b-form-group label="URL:" label-for="input-2">-->
+<!--                                    <b-form-input v-model="item.url" placeholder="" required></b-form-input>-->
+<!--                                </b-form-group>-->
 
                                 <b-form-group label="Image:"  :class="{'has_image': item.image}" label-for="input-2">
                                         <img v-show="item.image" :src="item.image" style=" height: 50px" >
@@ -63,10 +63,29 @@
                uploadTo: false}"
                                       @cropper-saved="saveCrop($event, 'cropper-saved')"></vue-anka-cropper>
                                 </b-form-group>
+
+                              <div v-if="item.domains.length > 0" class="mb-3">
+                                <label >Domains:</label>
+                                <b-form-group v-for="(domain) in item.domains" v-bind:data="domain"
+                                              v-bind:key="domain.id">
+                                  <div class="container">
+                                    <div class="row">
+                                      <b-form-input class="col-6 form-control-lg my-2" placeholder="" :value="domain.name" disabled></b-form-input>
+                                      <div class="col-2">
+                                        <b-icon v-on:click="toggle_active(domain)" font-scale="3" v-if="domain.active === 0" icon="toggle-off" variant="danger"></b-icon>
+                                        <b-icon v-on:click="toggle_active(domain)" font-scale="3" v-if="domain.active === 1" icon="toggle-on" variant="success"></b-icon>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </b-form-group>
+                              </div>
+
+
                                 <b-button type="submit" variant="primary">Submit</b-button>
                                 <b-button v-on:click="go_back" variant="danger">Back</b-button>
                                 <div v-show="show_message" class="status">{{message}}</div>
                             </b-form>
+
                         </div>
 
 
@@ -103,6 +122,7 @@ export default {
             url: null,
             place: null,
             image: null,
+            domains: []
         },
         show_message: false,
         message: 'Saved'
@@ -118,7 +138,7 @@ export default {
         if (this.$route.params.id) {
             this.edit = true;
             Vue.axios
-                .get('/links/'+this.$route.params.id).then(res => {
+                .get('/links/'+this.$route.params.id+'?expand=domains').then(res => {
                 this.item = res.data;
             });
         }
@@ -161,6 +181,21 @@ export default {
             reader.readAsDataURL(image);
             this.logotext = '';
         },
+
+      toggle_active: function (domain) {
+        if (domain.active === 0) {
+          this.item.domains.forEach(value => {
+            value.active = 0
+          })
+          domain.active = 1;
+        } else {
+          domain.active = 0;
+        }
+
+        Vue.axios
+            .post('/link-domain/toggle-status', domain)
+            .then(res => (this.reload()));
+      }
     },
     components: {
         SideBar,vueAnkaCropper

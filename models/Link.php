@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\SluggableBehavior;
 
 /**
  * This is the model class for table "{{%link}}".
@@ -17,6 +18,8 @@ use Yii;
  * @property string|null $place
  * @property int|null $active
  * @property string|null $image
+ *
+ * @property LinkDomain[] $domains
  */
 class Link extends \yii\db\ActiveRecord
 {
@@ -35,6 +38,17 @@ class Link extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return '{{%link}}';
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => SluggableBehavior::class,
+                'attribute' => 'title',
+                'slugAttribute' => 'name',
+            ],
+        ];
     }
 
     /**
@@ -66,6 +80,22 @@ class Link extends \yii\db\ActiveRecord
             'active' => Yii::t('app', 'Active'),
             'image' => Yii::t('app', 'Image'),
         ];
+    }
+
+    public function extraFields()
+    {
+        return [
+            'domains',
+        ];
+    }
+
+    public function afterDelete()
+    {
+        foreach ($this->domains as $domain) {
+            $domain->delete();
+        }
+
+        parent::afterDelete();
     }
 
     /**

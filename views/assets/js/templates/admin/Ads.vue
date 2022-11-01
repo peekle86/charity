@@ -28,17 +28,19 @@
                               <b-form @submit.prevent.stop="partner_import">
 
                                 <b-form-group label="Партнер:" label-for="input-2">
-                                  <b-form-select v-model="importModel.partner_id" :options="importModelOptions" required></b-form-select>
+                                  <b-form-select v-bind:class="{'is-invalid' : !importModel.partner_id}"
+                                                 v-model="importModel.partner_id"
+                                                 :options="importModelOptions" required></b-form-select>
                                 </b-form-group>
 
 
                                 <b-row class="my-1">
                                   <b-col sm="6">
-                                      <label for="importFormCount">Кількість мерчантів::</label>
+                                      <label for="importFormCount">Кількість мерчантів:</label>
                                       <b-form-input id="importFormCount" v-model="importModel.count" placeholder="" type="number"></b-form-input>
                                   </b-col>
                                   <b-col sm="6">
-                                      <label for="importFormOffset">Пропустити::</label>
+                                      <label for="importFormOffset">Пропустити:</label>
                                       <b-form-input id="importFormOffset" v-model="importModel.offset" placeholder="" type="number"></b-form-input>
                                   </b-col>
                                 </b-row>

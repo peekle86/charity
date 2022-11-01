@@ -20,6 +20,11 @@ class Adgoal extends \yii\base\Model
     private $public_key = 'Ddyxt4kHUd';
     private $private_key = 'hJHbMIJ3Ih3V3FNqo11zw5OdTzsjSD5h';
 
+    private $user_hash = 'tkoDLLu5';
+    private $panel_hash = 'rMcIPnDNf0';
+    private $profile_hash = 'JrqDXkw1';
+
+
     public function collect(int $countToCheck = 10, int $offset = 0)
     {
         $this->setMerchantsList($countToCheck, $offset);
@@ -72,19 +77,19 @@ class Adgoal extends \yii\base\Model
                 $this->added_count++;
             }
 
-            foreach ($merchant['domains'] as $domain) {
+            foreach ($merchant['domains'] as $key => $domain) {
                 if (!$link->hasDomain($domain)) {
                     $model = new LinkDomain();
                     $model->partner_id = Link::PARTNER_ADGOAL;
                     $model->link_id = $link->id;
                     $model->name = $domain;
-                    $model->affiliate_url = '';
+                    $model->active = $key === 0 ? 1 : 0;
+                    $model->affiliate_url = $this->generateAffiliateUrl($merchant['merchants_id'], $domain);
                     $model->save();
 
                     $this->added_domains_count++;
                 }
             }
-
         }
     }
 
@@ -123,6 +128,20 @@ class Adgoal extends \yii\base\Model
         $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
         return $base64;
+    }
+
+    private function generateAffiliateUrl($merchant_id, $domain)
+    {
+        $params = [
+            'u' => $this->user_hash,
+            'm' => $merchant_id,
+            'p' => $this->panel_hash,
+            't' => $this->profile_hash,
+            's' => 'test',
+            'url' => 'http://' . $domain
+        ];
+
+        return 'http://www.smartredirect.de/redir/clickGate.php?' . http_build_query($params);
     }
 
 }

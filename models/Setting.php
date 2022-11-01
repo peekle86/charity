@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\Json;
+use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for table "{{%setting}}".
@@ -53,4 +55,26 @@ class Setting extends \yii\db\ActiveRecord
     {
         return new SettingQuery(get_called_class());
     }
+
+    public static function getValue($name)
+    {
+        $setting = self::findOne(['name' => $name]);
+        if (!$setting) {
+            throw new NotFoundHttpException('Setting not found');
+        }
+
+        return $setting->value;
+    }
+
+    public static function fastSetValue(string $name, $value)
+    {
+        $setting = self::findOne(['name' => $name]);
+        if (!$setting) {
+            throw new NotFoundHttpException('Setting not found');
+        }
+
+        $setting->value = $value;
+        return $setting->save();
+    }
+
 }

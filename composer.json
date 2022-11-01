@@ -20,7 +20,9 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "aki/yii2-vue": "*",
         "dektrium/yii2-user": "^0.9.14",
-        "schallschlucker/yii2-simple-cms": ">=0.2.4"
+        "schallschlucker/yii2-simple-cms": ">=0.2.4",
+        "ext-curl": "*",
+        "admitad/api": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\API\Adgoal;
+use app\models\API\Admitad;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -66,8 +67,8 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-//        $adgoal = new Adgoal();
-//        $adgoal->collect(20);
+//        $admitad = new Admitad();
+//        $admitad->collect();
 //
 //        echo 'Було додано: ' . $adgoal->added_count . ' нових посилань/магазинів'
 //            . PHP_EOL
@@ -79,11 +80,13 @@ class SiteController extends Controller
     public function actionGoto($name)
     {
         $link = Link::find()
-                            ->where(['name' => $name])
-                            ->one();
+            ->where(['name' => $name])
+            ->one();
 
-        if (isset( $link['url'])) {
-            return $this->redirect($link['url']);
+        $linkDomain = $link->getActiveDomain();
+
+        if ($linkDomain) {
+            return $this->redirect($linkDomain['affiliate_url']);
         } else {
             return $this->redirect('/');
         }

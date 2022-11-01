@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\API\Adgoal;
+use app\models\API\Admitad;
 use app\models\Link;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
@@ -53,7 +54,7 @@ class PartnerController extends Controller
         if ($partner_id == Link::PARTNER_ADGOAL) {
             $importer = new Adgoal();
         } elseif ($partner_id == Link::PARTNER_ADMITAD) {
-            $importer = null;
+            $importer = new Admitad();
         } else {
             throw new NotFoundHttpException('Partner not found');
         }
