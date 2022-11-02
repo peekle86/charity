@@ -23,6 +23,12 @@ class Setting extends \yii\db\ActiveRecord
         return '{{%setting}}';
     }
 
+    public function afterFind()
+    {
+        $this->value = Json::decode($this->value);
+        parent::afterFind();
+    }
+
     /**
      * {@inheritdoc}
      */

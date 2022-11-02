@@ -35,11 +35,11 @@ class Admitad extends \yii\base\Model
 
     public function __construct($config = [])
     {
-        $this->client_id = Setting::getValue('admitad_client_id');
-        $this->client_secret = Setting::getValue('admitad_client_secret');
+        $this->client_id = Setting::getStaticValue('admitad_client_id');
+        $this->client_secret = Setting::getStaticValue('admitad_client_secret');
 
-        $this->access_token = Setting::getValue('admitad_access_token');
-        $this->refresh_token = Setting::getValue('admitad_refresh_token');
+        $this->access_token = Setting::getStaticValue('admitad_access_token');
+        $this->refresh_token = Setting::getStaticValue('admitad_refresh_token');
 
         if ($this->access_token == '1') {
             $this->getAccessToken();
