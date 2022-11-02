@@ -152,7 +152,6 @@ class SearchController extends Controller {
             $ads = Link::find()->all();
 
             $links = [];
-            $link = null;
 
             foreach ($res->data['items'] as $result) {
 //                $target_domain = parse_url($result['link']);
@@ -166,7 +165,9 @@ class SearchController extends Controller {
                         ->limit(1)
                         ->one();
 
-                    $link = $domain->link;
+                    if ($domain) {
+                        $link = $domain->link;
+                    }
 //                    $link = Link::find()
 //                        ->joinWith('domains')
 //                        ->where(['link.active' => 1])
