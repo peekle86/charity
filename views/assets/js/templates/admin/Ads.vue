@@ -58,11 +58,14 @@
                                         {{ cell }}
                                     </div>
                                 </div>
-                                <div class="dash__body">
-                                    <div class="body__line  text-center" v-for="(item) in items" :key="item.id">
+                                <div id="itemList" class="dash__body">
+                                    <div class="body__line  text-center" v-for="(item) in itemsForList" :key="item.id">
                                         <div class="body__cell">{{ item.id }}</div>
                                         <div class="body__cell">{{ item.title }}</div>
-                                        <div class="body__cell">{{ item.target_domain }}</div>
+                                        <div class="body__cell">
+                                          <span v-if="item.activeDomain">{{ item.activeDomain.name }}</span>
+                                          <span v-else>---</span>
+                                        </div>
                                         <div class="body__cell">
                                             <img class="logo-preview" v-if="item.image" v-bind:src="item.image" alt="">
                                             <span v-else>---</span>
@@ -79,6 +82,14 @@
                                 </div>
                             </div>
                         </div>
+
+                      <b-pagination
+                          v-model="currentPage"
+                          :total-rows="rows"
+                          :per-page="perPage"
+                          aria-controls="itemList"
+                          align="center"
+                      ></b-pagination>
                     </div>
                 </div>
             </div>
@@ -111,6 +122,10 @@ export default {
           added: 0,
           exists: 0
         },
+      currentPage: 1,
+      perPage: 20,
+      rows: 0,
+      itemsForList: []
     }),
     computed: {},
     mounted() {
@@ -122,8 +137,12 @@ export default {
         
         reload: function () {
             Vue.axios
-                .get('/links?per-page=9999')
-                .then(res => (this.items = res.data));
+                .get('/links?per-page=999999&expand=activeDomain')
+                .then(res => {
+                  this.items = res.data
+                  this.rows = this.items.length
+                  this.getItemsForList()
+                });
         },
         add_item: function () {
             this.$router.push('/ads/new');
@@ -191,6 +210,24 @@ export default {
           this.dismissCountDown = dismissCountDown
         },
 
+      getItemsForList: function () {
+          if (Array.isArray(this.items)) {
+            this.itemsForList = this.items.slice(
+                (this.currentPage - 1) * this.perPage,
+                this.currentPage * this.perPage,
+            );
+          }
+      }
+
+    },
+    watch: {
+      currentPage: {
+        immediate: true,
+        deep: true,
+        handler(newValue, oldValue) {
+          this.getItemsForList()
+        }
+      }
     },
     components: {
         SideBar,

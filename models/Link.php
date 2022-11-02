@@ -86,6 +86,7 @@ class Link extends \yii\db\ActiveRecord
     {
         return [
             'domains',
+            'activeDomain'
         ];
     }
 
@@ -114,7 +115,8 @@ class Link extends \yii\db\ActiveRecord
 
     public function getActiveDomain()
     {
-        return $this->getDomains()->where(['active' => 1])->limit(1)->one();
+        return $this->hasOne(LinkDomain::class, ['link_id' => 'id'])
+            ->where(['active' => 1]);
     }
 
     public function hasDomain($domain)
