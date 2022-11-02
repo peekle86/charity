@@ -113,7 +113,7 @@ export default {
             .then(res => (this.cats = res.data));
 
         Vue.axios
-            .get('/organizations')
+            .get('/organizations?sort=sort')
             .then(res => {
                 let already_selected = this.$cookie.get('support');
                 console.log(res.data);

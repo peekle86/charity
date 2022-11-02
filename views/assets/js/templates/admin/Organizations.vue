@@ -13,7 +13,8 @@
                 </div>
                 <div class="dashboard-body">
                     <div class="container">
-                        <div class="col-xl-12 d-flex justify-content-end">
+                        <div class="col-xl-12 d-flex justify-content-between">
+                            <b-form-select class="col-md-3" v-model="category" :options="options" @change="reload()"></b-form-select>
                             <b-button v-on:click="add_item">New Organization</b-button>
                         </div>
                         
@@ -25,21 +26,25 @@
                                     </div>
                                 </div>
                                 <div class="dash__body">
-                                    <div class="body__line  text-center" v-for="(item) in items" :key="item.id">
-                                        <div class="body__cell">{{ item.name }}</div>
-                                        <div class="body__cell">{{ item.url }}</div>
-                                        <div class="body__cell">{{ item.description }}</div>
-                                        <div class="body__cell">{{ item.email }}</div>
-                                        <div class="body__cell">
-                                            <img class="logo-preview" v-if="item.logo" v-bind:src="item.logo" alt="">
-                                            <span v-else>---</span>
-                                        </div>
-                                        <div class="body__cell">
-                                            <b-button v-on:click="edit_item(item.id)" pill variant="primary">Edit</b-button>
-                                            <b-button v-on:click="remove_item(item.id)" pill variant="danger">Remove</b-button>
-                                        </div>
+                                  <draggable v-model="items" v-bind="dragOptions" @end="on_end_drag">
+                                      <transition-group>
+                                          <div class="body__line  text-center" v-for="(item) in items" :key="item.id">
+                                              <div class="body__cell">{{ item.name }}</div>
+                                              <div class="body__cell">{{ item.url }}</div>
+                                              <div class="body__cell">{{ item.description }}</div>
+                                              <div class="body__cell">{{ item.email }}</div>
+                                              <div class="body__cell">
+                                                  <img class="logo-preview" v-if="item.logo" v-bind:src="item.logo" alt="">
+                                                  <span v-else>---</span>
+                                              </div>
+                                              <div class="body__cell">
+                                                  <b-button v-on:click="edit_item(item.id)" pill variant="primary">Edit</b-button>
+                                                  <b-button v-on:click="remove_item(item.id)" pill variant="danger">Remove</b-button>
+                                              </div>
 
-                                    </div>
+                                          </div>
+                                      </transition-group>
+                                  </draggable>
                                 </div>
                             </div>
                         </div>
@@ -67,19 +72,51 @@ export default {
         items: null,
         fields: ['name', 'url', 'description', 'email', 'logo', 'edit'],
         id: 'organizations',
+        category: null,
+        selected: null,
+        options: [
+          { value: null, text: 'Please select a category' },
+        ]
     }),
-    computed: {},
+    computed: {
+      dragOptions() {
+        return {
+          animation: 200,
+          disabled: false,
+          ghostClass: "ghost"
+        };
+      }
+    },
     mounted() {
         this.reload();
+        Vue.axios
+          .get('/categories')
+          .then(res => {
+            let options = []
+            $.each(res.data, function (i, item) {
+              options.push({
+                value: item.id,
+                text: item.name
+              })
+            })
+            this.options = this.options.concat(options)
+        });
     },
     filters: {},
     
     methods: {
 
         reload: function () {
+          console.log(this.category)
+          if (this.category) {
+            Vue.axios
+                .get('/organizations?sort=sort&filter[category_id]='+this.category)
+                .then(res => (this.items = res.data));
+          } else {
             Vue.axios
                 .get('/organizations')
                 .then(res => (this.items = res.data));
+          }
         },
         add_item: function () {
             this.$router.push('/orgs/new');
@@ -105,11 +142,24 @@ export default {
         edit_item: function (id) {
             this.$router.push('/orgs/edit/'+id);
     
+        },
+
+        on_end_drag: function (item) {
+          let array = [];
+          this.items.forEach(item => {
+            array.push(item.id)
+          })
+
+          Vue.axios
+              .post('/organization/sort', array);
+          console.log(this.items)
+          console.log(array)
+
         }
     },
     components: {
         SideBar,
-        draggable
+        draggable,
     },
 };
 </script>

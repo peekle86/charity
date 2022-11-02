@@ -16,6 +16,7 @@ use Yii;
  * @property int|null $active
  * @property int|null $lang_id
  * @property string|null $logo
+ * @property int $sort
  *
  * @property Category $category
  */
