@@ -34,4 +34,17 @@ class LinkDomainController extends \yii\web\Controller
         ]);
     }
 
+    public function actionSave()
+    {
+        $domains = $this->request->post();
+
+        if (is_array($domains)) {
+            foreach ($domains as $domain) {
+                $dbDomain = LinkDomain::findOne(['id' => $domain['id']]);
+                $dbDomain->attributes = $domain;
+                $dbDomain->save();
+            }
+        }
+    }
+
 }

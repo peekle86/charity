@@ -70,7 +70,8 @@
                                               v-bind:key="domain.id">
                                   <div class="container">
                                     <div class="row">
-                                      <b-form-input class="col-6 form-control-lg my-2" placeholder="" :value="domain.name" disabled></b-form-input>
+                                      <b-form-input class="col-4 form-control-lg my-2" placeholder="" v-model="domain.name"  :value="domain.name" disabled></b-form-input>
+                                      <b-form-input class="col-6 form-control-lg my-2" placeholder="" v-model="domain.affiliate_url"  :value="domain.affiliate_url"></b-form-input>
                                       <div class="col-2">
                                         <b-icon v-on:click="toggle_active(domain)" font-scale="3" v-if="domain.active === 0" icon="toggle-off" variant="danger"></b-icon>
                                         <b-icon v-on:click="toggle_active(domain)" font-scale="3" v-if="domain.active === 1" icon="toggle-on" variant="success"></b-icon>
@@ -156,6 +157,9 @@ export default {
                 this.item.id = this.number;
                 Vue.axios
                     .put('/links/' + this.number, this.item)
+                    .then(res => (this.reload()));
+                Vue.axios
+                    .post('/link-domain/save', this.item.domains)
                     .then(res => (this.reload()));
             } else {
                 Vue.axios

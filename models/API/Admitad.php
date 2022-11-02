@@ -25,6 +25,14 @@ class Admitad extends \yii\base\Model
     private $access_token;
     private $refresh_token;
 
+    private $campaigns_id = [
+        '1826645',
+        '701387',
+        '1804935',
+        '2017648',
+        '2023660'
+    ];
+
     public function __construct($config = [])
     {
         $this->client_id = Setting::getValue('admitad_client_id');
@@ -96,13 +104,20 @@ class Admitad extends \yii\base\Model
     public function setMerchantList(int $count = 10, int $offset = 0)
     {
         $api = new Api($this->access_token);
+        $merchants = [];
 
-        $data = $api->get('/advcampaigns/', array(
-            'limit' => $count,
-            'offset' => $offset
-        ))->getResult();
+        foreach ($this->campaigns_id as $id) {
+            $data = $api->get("/advcampaigns/website/{$id}/", array(
+                'limit' => $count,
+                'offset' => $offset
+            ))->getResult();
 
-        $this->merchants = $data->results;
+            foreach ($data->results as $result) {
+                $merchants[] = $result;
+            }
+        }
+
+        $this->merchants = array_slice($merchants, $offset, $count);
     }
 
     private function saveMerchants()
@@ -131,7 +146,7 @@ class Admitad extends \yii\base\Model
                 $model->link_id = $link->id;
                 $model->name = $merchant['site_url'];
                 $model->active = 1;
-                $model->affiliate_url = /*$this->generateAffiliateUrl($merchant['id'], $merchant['site_url'])*/ '';
+                $model->affiliate_url = $merchant['gotolink'];
                 $model->save();
 
                 $this->added_domains_count++;
