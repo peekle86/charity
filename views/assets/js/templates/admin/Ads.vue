@@ -122,7 +122,7 @@ export default {
         
         reload: function () {
             Vue.axios
-                .get('/links')
+                .get('/links?per-page=9999')
                 .then(res => (this.items = res.data));
         },
         add_item: function () {
