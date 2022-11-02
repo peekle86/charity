@@ -6,7 +6,6 @@
   "dependencies": {
     "axios": "^0.21.4",
     "bootstrap-vue": "^2.21.2",
-    "ckeditor4-vue": "^2.2.0",
     "lodash": "^4.17.21",
     "vue": "^2.6.11",
     "vue-anka-cropper": "^1.1.0",
@@ -15,6 +14,7 @@
     "vue-cookie": "^1.1.4",
     "vue-meta": "^2.4.0",
     "vue-router": "^3.5.2",
+    "vue2-tinymce-editor": "^0.0.1",
     "vuedraggable": "^2.24.3",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11"

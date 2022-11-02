@@ -20,9 +20,10 @@
                                 </b-form-group>
     
                                 <b-form-group label="Description:" label-for="input-2">
-                                  <ckeditor :editor="editor" v-model="item.description" placeholder="Enter description" required></ckeditor>
+                                  <vue2-tinymce-editor v-model="item.description" :options="editor_options"></vue2-tinymce-editor>
                                 </b-form-group>
-                                <b-form-group label="Url:" label-for="input-2">
+
+                              <b-form-group label="Url:" label-for="input-2">
                                     <b-form-input v-model="item.url" placeholder="Enter url" required></b-form-input>
                                 </b-form-group>
                                 
@@ -60,7 +61,7 @@
 
 <script>
 import SideBar from "@ad/SideBar.vue";
-import CKEditor from 'ckeditor4-vue';
+import { Vue2TinymceEditor } from "vue2-tinymce-editor";
 
 
 export default {
@@ -82,7 +83,11 @@ export default {
         categories: null,
         show_message: false,
         message: 'Saved',
-        editor: CKEditor,
+        editor_options:{
+          menubar:false,
+          plugins: 'advlist autolink charmap code codesample directionality emoticons',
+          toolbar1:'fontselect | fontsizeselect | formatselect | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | link table removeformat code',
+        }
     }),
     computed: {
         hasImage() {
@@ -150,6 +155,7 @@ export default {
     },
     components: {
         SideBar,
+      Vue2TinymceEditor
     },
 };
 </script>
