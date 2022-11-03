@@ -82,7 +82,7 @@ export default {
       dragOptions() {
         return {
           animation: 200,
-          disabled: false,
+          disabled: !this.category,
           ghostClass: "ghost"
         };
       }
