@@ -86,7 +86,7 @@ class SiteController extends Controller
             ->where(['name' => $name])
             ->one();
 
-        $linkDomain = $link->getActiveDomain();
+        $linkDomain = $link->activeDomain;
 
         if ($linkDomain) {
             return $this->redirect($linkDomain['affiliate_url']);

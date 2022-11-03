@@ -119,9 +119,12 @@ class Link extends \yii\db\ActiveRecord
             ->where(['active' => 1]);
     }
 
-    public function hasDomain($domain)
+    public function hasDomain($domain, $partner_id)
     {
-        return (bool) $this->getDomains()->where(['name' => $domain])->count();
+        return (bool) $this->getDomains()
+            ->where(['name' => $domain])
+            ->andWhere(['partner_id' => $partner_id])
+            ->count();
     }
 
 }

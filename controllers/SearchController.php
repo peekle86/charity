@@ -13,6 +13,7 @@ use Yii;
 use app\models\Setting;
 use yii\filters\AccessControl;
 use yii\helpers\BaseUrl;
+use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
@@ -69,7 +70,11 @@ class SearchController extends Controller {
             return $_SERVER['HTTP_CLIENT_IP'];
         }
         else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
+            if (str_contains($_SERVER['HTTP_X_FORWARDED_FOR'], ',')) {
+                return explode(', ', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+            } else {
+                return $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }
         }
         else {
             return $_SERVER['REMOTE_ADDR'];
@@ -166,7 +171,10 @@ class SearchController extends Controller {
                         ->one();
 
                     if ($domain) {
-                        $link = $domain->link;
+                        $temp = $domain->link;
+                        if ($temp->active == 1) {
+                            $link = $temp;
+                        }
                     }
 //                    $link = Link::find()
 //                        ->joinWith('domains')

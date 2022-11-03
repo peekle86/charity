@@ -140,7 +140,7 @@ class Admitad extends \yii\base\Model
                 $this->added_count++;
             }
 
-            if (!$link->hasDomain($merchant['site_url'])) {
+            if (!$link->hasDomain($merchant['site_url'], Link::PARTNER_ADMITAD)) {
                 $model = new LinkDomain();
                 $model->partner_id = Link::PARTNER_ADMITAD;
                 $model->link_id = $link->id;

@@ -78,7 +78,7 @@ class Adgoal extends \yii\base\Model
             }
 
             foreach ($merchant['domains'] as $key => $domain) {
-                if (!$link->hasDomain($domain)) {
+                if (!$link->hasDomain($domain, Link::PARTNER_ADGOAL)) {
                     $model = new LinkDomain();
                     $model->partner_id = Link::PARTNER_ADGOAL;
                     $model->link_id = $link->id;
