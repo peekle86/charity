@@ -64,21 +64,39 @@
                                       @cropper-saved="saveCrop($event, 'cropper-saved')"></vue-anka-cropper>
                                 </b-form-group>
 
-                              <div v-if="item.domains.length > 0" class="mb-3">
+                              <div class="my-5">
                                 <label >Domains:</label>
-                                <b-form-group v-for="(domain) in item.domains" v-bind:data="domain"
+                                <b-form-group v-for="(domain, i) in item.domains" v-bind:data="domain"
                                               v-bind:key="domain.id">
                                   <div class="container">
                                     <div class="row">
-                                      <b-form-input class="col-4 form-control-lg my-2" placeholder="" v-model="domain.name"  :value="domain.name" disabled></b-form-input>
-                                      <b-form-input class="col-6 form-control-lg my-2" placeholder="" v-model="domain.affiliate_url"  :value="domain.affiliate_url"></b-form-input>
-                                      <div class="col-2">
+                                        <b-form-group class="col-2 my-2" label="Partner:">
+                                          <b-form-select class="custom-select-lg" v-model="domain.partner_id" :options="partners" required></b-form-select>
+                                        </b-form-group>
+
+                                      <b-form-group class="col-3 my-2" label="Domain:">
+                                        <b-form-input class="form-control-lg" placeholder="" v-model="domain.name"  :value="domain.name" required></b-form-input>
+                                      </b-form-group>
+
+                                      <b-form-group class="col-5 my-2" label="Affiliate url:">
+                                        <b-form-input class="form-control-lg" placeholder="" v-model="domain.affiliate_url"  :value="domain.affiliate_url" required></b-form-input>
+                                      </b-form-group>
+
+                                      <div class="col-1 py-4 text-center">
                                         <b-icon v-on:click="toggle_active(domain)" font-scale="3" v-if="domain.active === 0" icon="toggle-off" variant="danger"></b-icon>
                                         <b-icon v-on:click="toggle_active(domain)" font-scale="3" v-if="domain.active === 1" icon="toggle-on" variant="success"></b-icon>
+                                      </div>
+
+                                      <div class="col-1 my-auto">
+                                        <b-button type="button" variant="danger" @click="remove_domain(domain)">x</b-button>
                                       </div>
                                     </div>
                                   </div>
                                 </b-form-group>
+
+                                <p class="text-center">
+                                  <b-button type="button" variant="secondary" @click="add_domain">+ Add</b-button>
+                                </p>
                               </div>
 
 
@@ -126,7 +144,8 @@ export default {
             domains: []
         },
         show_message: false,
-        message: 'Saved'
+        message: 'Saved',
+        partners: []
     }),
     computed: {
         hasImage() {
@@ -136,6 +155,9 @@ export default {
     mounted() {
 
         this.number = this.$route.params.id;
+      Vue.axios
+          .get('/partner/get-custom')
+          .then(res => (this.partners = res.data));
         if (this.$route.params.id) {
             this.edit = true;
             Vue.axios
@@ -147,24 +169,49 @@ export default {
     filters: {},
     methods: {
         reload: function () {
-
+          Vue.axios
+              .get('/links/'+this.item.id+'?expand=domains').then(res => {
+            this.item = res.data;
+          });
         },
         go_back: function () {
             this.$router.push('/ads');
         },
         save_item: function () {
+          console.log(this.edit);
             if (this.edit) {
                 this.item.id = this.number;
                 Vue.axios
                     .put('/links/' + this.number, this.item)
-                    .then(res => (this.reload()));
-                Vue.axios
-                    .post('/link-domain/save', this.item.domains)
-                    .then(res => (this.reload()));
+                    .then(res => {
+                      this.reload()
+                      Vue.axios
+                          .post('/link-domain/save', this.item.domains)
+                          .then(res => (this.reload()));
+                    });
             } else {
                 Vue.axios
                     .post('/links', this.item)
-                    .then(res => (this.reload()));
+                    .then(res => {
+                      let domains = this.item.domains,
+                          result = res.data;
+
+                      domains.forEach(item => {
+                        item.link_id = result.id
+                      })
+
+                      result.domains = domains;
+
+                      Vue.axios
+                          .post('/link-domain/save', domains)
+                          .then(res => {
+                            this.$router.push('/ads/edit/'+result.id);
+                            this.edit = true
+                            this.item = result
+                            this.number = result.id
+                            this.reload()
+                          });
+                    });
             }
             this.show_message = true;
             setTimeout(() => this.show_message = false, 2000);
@@ -187,18 +234,45 @@ export default {
         },
 
       toggle_active: function (domain) {
-        if (domain.active === 0) {
-          this.item.domains.forEach(value => {
-            value.active = 0
-          })
-          domain.active = 1;
-        } else {
-          domain.active = 0;
-        }
+          if (domain.id) {
+            if (domain.active === 0) {
+              this.item.domains.forEach(value => {
+                value.active = 0
+              })
+              domain.active = 1;
+            } else {
+              domain.active = 0;
+            }
 
-        Vue.axios
-            .post('/link-domain/toggle-status', domain)
-            .then(res => (this.reload()));
+            Vue.axios
+                .post('/link-domain/toggle-status', domain)
+                .then(res => (this.reload()));
+          }
+      },
+
+      add_domain: function () {
+        this.item.domains.push({
+          id: null,
+          partner_id: null,
+          link_id: this.item.id,
+          name: null,
+          affiliate_url: null,
+          active: 0
+        })
+      },
+
+      remove_domain: function (domain) {
+        if (domain.id) {
+          if (confirm('Are you sure?')) {
+            Vue.axios
+                .delete('/link-domain/delete/' + domain.id);
+            let i = this.item.domains.indexOf(domain)
+            this.item.domains.splice(i, 1)
+          }
+        } else {
+          let i = this.item.domains.indexOf(domain)
+          this.item.domains.splice(i, 1)
+        }
       }
     },
     components: {

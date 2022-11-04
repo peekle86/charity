@@ -3,6 +3,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use yii\base\DynamicModel;
 use yii\data\ActiveDataFilter;
 use yii\data\ActiveDataProvider;
@@ -24,9 +25,17 @@ class LinkController extends \yii\rest\ActiveController implements CheckAccessIn
 
             'prepareDataProvider' => function () {
 
+                $q = Yii::$app->request->get('q');
+                if ($q) {
+                    $query = $this->modelClass::find()
+                        ->where(['like', 'title', $q]);
+                } else {
+                    $query = $this->modelClass::find();
+                }
+
                 return new ActiveDataProvider([
 
-                    'query' => $this->modelClass::find(),
+                    'query' => $query,
 
                     'pagination' => false,
 

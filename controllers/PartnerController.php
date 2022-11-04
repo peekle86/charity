@@ -5,40 +5,28 @@ namespace app\controllers;
 use app\models\API\Adgoal;
 use app\models\API\Admitad;
 use app\models\Link;
+use app\models\Partner;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
+use yii\rest\ActiveController;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-class PartnerController extends Controller
+class PartnerController extends ActiveController
 {
+    public $modelClass = 'app\models\Partner';
 
     public $enableCsrfValidation = false;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
+    public function actionGetCustom()
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'import' => ['post'],
-                ],
-            ],
-        ];
-    }
-
-    public function actionGet()
-    {
-        $partners = Link::ALL_PARTNERS;
+        $partners = Partner::find()->all();
         $result = [];
 
-        foreach ($partners as $id => $name) {
+        foreach ($partners as $partner) {
             $result[] = [
-                'value' => $id,
-                'text' => $name
+                'value' => $partner->id,
+                'text' => $partner->title
             ];
         }
 

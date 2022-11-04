@@ -33,8 +33,7 @@ class LinkDomain extends ActiveRecord
     {
         return [
             [['slug', 'affiliate_url', 'name'], 'string'],
-            [['partner_id'], 'integer'],
-            [['partner_id'], 'in', 'range' => array_keys(Link::ALL_PARTNERS)],
+            [['partner_id'], 'exist', 'skipOnEmpty' => false, 'targetClass' => Partner::class, 'targetAttribute' => ['partner_id' => 'id']],
             [['link_id'], 'exist', 'skipOnEmpty' => false, 'targetClass' => Link::class, 'targetAttribute' => ['link_id' => 'id']],
             [['active'], 'boolean'],
             [['active'], 'default', 'value' => 0],

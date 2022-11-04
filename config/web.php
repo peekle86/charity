@@ -142,8 +142,9 @@ $config = [
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'page' ],
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'lang' ],
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'link' ],
+                [ 'class' => 'yii\rest\UrlRule', 'controller' => 'partner' ],
 
-                'partners' => 'partner/get',
+                'link-domain/delete/<id:\d+>' => 'link-domain/delete'
             ],
         ],
     ],

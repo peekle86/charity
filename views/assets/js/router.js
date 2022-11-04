@@ -24,6 +24,9 @@ import LangsForm from '@/assets/js/templates/admin/LangsForm.vue';
 import Ads from '@/assets/js/templates/admin/Ads.vue';
 import AdsForm from '@/assets/js/templates/admin/AdsForm.vue';
 
+import Partners from '@/assets/js/templates/admin/Partners.vue';
+import PartnersForm from '@/assets/js/templates/admin/PartnersForm.vue';
+
 import Settings from '@/assets/js/templates/admin/Settings.vue';
 
 
@@ -61,6 +64,10 @@ const routes = [
     { path: "/ads", component: Ads },
     { path: "/ads/new", component: AdsForm },
     { path: "/ads/edit/:id", component: AdsForm },
+
+    { path: "/prtns", component: Partners },
+    { path: "/prtns/new", component: PartnersForm },
+    { path: "/prtns/edit/:id", component: PartnersForm },
 
     { path: "/cats", component: Categories },
     { path: "/cats/new", component: CategoriesForm },

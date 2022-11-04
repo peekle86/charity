@@ -40,10 +40,25 @@ class LinkDomainController extends \yii\web\Controller
 
         if (is_array($domains)) {
             foreach ($domains as $domain) {
-                $dbDomain = LinkDomain::findOne(['id' => $domain['id']]);
+                if ($domain['id']) {
+                    $dbDomain = LinkDomain::findOne(['id' => $domain['id']]);
+                } else {
+                    $dbDomain = new LinkDomain();
+                }
                 $dbDomain->attributes = $domain;
-                $dbDomain->save();
+                if (!$dbDomain->save()) {
+                    var_dump($dbDomain->errors);
+                }
             }
+        }
+    }
+
+    public function actionDelete($id)
+    {
+        $domain = LinkDomain::findOne(['id' => $id]);
+
+        if ($domain && $this->request->isDelete) {
+            $domain->delete();
         }
     }
 

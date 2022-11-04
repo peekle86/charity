@@ -22,7 +22,10 @@
                       </b-alert>
 
                         <div class="col-xl-12 d-flex justify-content-end">
-                            <b-button class="mx-2" v-b-modal.importModal>Імпорт</b-button>
+
+                          <b-form-input @input="reload" class="mr-3 col-3" id="searchInput" v-model="search" placeholder="Search..." type="text"></b-form-input>
+
+                          <b-button class="mx-2" v-b-modal.importModal>Імпорт</b-button>
 
                             <b-modal id="importModal" title="Імпорт від партнерів" @ok="partner_import" :ok-disabled="submitButtonDisabled">
                               <b-form @submit.prevent.stop="partner_import">
@@ -125,7 +128,8 @@ export default {
       currentPage: 1,
       perPage: 20,
       rows: 0,
-      itemsForList: []
+      itemsForList: [],
+      search: null
     }),
     computed: {},
     mounted() {
@@ -136,8 +140,13 @@ export default {
     methods: {
         
         reload: function () {
+          let url = '/links?expand=activeDomain';
+          if (this.search) {
+            url = '/links?expand=activeDomain&q=' + this.search
+          }
+
             Vue.axios
-                .get('/links?per-page=999999&expand=activeDomain')
+                .get(url)
                 .then(res => {
                   this.items = res.data
                   this.rows = this.items.length
@@ -183,7 +192,7 @@ export default {
 
         get_partners: function () {
           Vue.axios
-              .get('/partners')
+              .get('/partner/get-custom')
               .then(res => (this.importModelOptions = res.data));
         },
 
