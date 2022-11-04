@@ -23,12 +23,6 @@ class Setting extends \yii\db\ActiveRecord
         return '{{%setting}}';
     }
 
-    public function afterFind()
-    {
-        $this->value = Json::decode($this->value);
-        parent::afterFind();
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -60,16 +54,6 @@ class Setting extends \yii\db\ActiveRecord
     public static function find()
     {
         return new SettingQuery(get_called_class());
-    }
-
-    public static function getValue($name)
-    {
-        $setting = self::findOne(['name' => $name]);
-        if (!$setting) {
-            throw new NotFoundHttpException('Setting not found');
-        }
-
-        return $setting->value;
     }
 
     public static function fastSetValue(string $name, $value)

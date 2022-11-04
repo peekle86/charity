@@ -14,7 +14,7 @@
                                     <b-form-input v-model="item.title" placeholder="" required></b-form-input>
                                 </b-form-group>
                                 <b-form-group label="Content:" label-for="input-2">
-                                    <b-form-textarea rows="6" max-rows="9" v-model="item.content" placeholder="" required></b-form-textarea>
+                                  <vue2-tinymce-editor v-model="item.content" :options="editor_options"></vue2-tinymce-editor>
                                 </b-form-group>
 
                                 <b-form-group label="SEO desc" label-for="input-2">
@@ -46,6 +46,7 @@
 
 <script>
 import SideBar from "@ad/SideBar.vue";
+import {Vue2TinymceEditor} from "vue2-tinymce-editor";
 
 export default {
     name: "Categories",
@@ -61,7 +62,12 @@ export default {
             slug: null,
         },
         show_message: false,
-        message: 'Saved'
+        message: 'Saved',
+        editor_options:{
+          menubar:false,
+          plugins: 'advlist autolink charmap code codesample directionality emoticons',
+          toolbar1:'fontselect | fontsizeselect | formatselect | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | link table removeformat code',
+        }
     }),
     computed: {},
     mounted() {
@@ -100,6 +106,7 @@ export default {
     },
     components: {
         SideBar,
+      Vue2TinymceEditor
     },
 };
 </script>
