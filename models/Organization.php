@@ -3,11 +3,13 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\SluggableBehavior;
 
 /**
  * This is the model class for table "organization".
  *
  * @property int $id
+ * @property string|null $slug
  * @property string|null $name
  * @property string|null $url
  * @property int|null $category_id
@@ -17,6 +19,8 @@ use Yii;
  * @property int|null $lang_id
  * @property string|null $logo
  * @property int $sort
+ * @property string|null $title
+ * @property string|null $content
  *
  * @property Category $category
  */
@@ -36,9 +40,19 @@ class Organization extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'url', 'description', 'email', 'logo'], 'string'],
+            [['slug', 'name', 'url', 'description', 'email', 'logo', 'title', 'content'], 'string'],
             [['category_id', 'active', 'lang_id'], 'integer'],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => SluggableBehavior::class,
+                'attribute' => 'title',
+            ],
         ];
     }
 

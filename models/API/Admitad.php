@@ -18,6 +18,10 @@ class Admitad extends \yii\base\Model
     public $added_count = 0;
 
     public $added_domains_count = 0;
+    public $old_domains_count = 0;
+    public $new_domains_count = 0;
+
+    public $time_spent = 0;
 
     private $client_id;
     private $client_secret;
@@ -44,6 +48,8 @@ class Admitad extends \yii\base\Model
         if ($this->access_token == '1') {
             $this->getAccessToken();
         }
+
+        $this->refreshToken();
 
         parent::__construct($config);
     }
@@ -95,59 +101,85 @@ class Admitad extends \yii\base\Model
     }
 
 
-    public function collect(int $countToCheck = 10, int $offset = 0)
+    public function collect()
     {
-        $this->setMerchantList($countToCheck, $offset);
+        $start_time = microtime(true);
+
+        $this->old_domains_count = LinkDomain::find()->where(['partner_id' => Link::PARTNER_ADMITAD])->count();
+        LinkDomain::deleteAll(['partner_id' => Link::PARTNER_ADMITAD]);
+
+        $this->setMerchantList();
         $this->saveMerchants();
+
+        $this->time_spent = microtime(true) - $start_time;
+        $this->new_domains_count = $this->added_domains_count - $this->old_domains_count;
     }
 
-    public function setMerchantList(int $count = 10, int $offset = 0)
+    public function setMerchantList()
     {
         $api = new Api($this->access_token);
         $merchants = [];
+        $limit = 500;
 
         foreach ($this->campaigns_id as $id) {
-            $data = $api->get("/advcampaigns/website/{$id}/", array(
-                'limit' => $count,
-                'offset' => $offset
-            ))->getResult();
+            $data = $api->get("/advcampaigns/website/{$id}/", [
+                'limit' => $limit
+            ])->getResult();
 
             foreach ($data->results as $result) {
                 $merchants[] = $result;
             }
+
+            $offset = $limit;
+            while ($data->_meta->count > $offset) {
+                $data = $api->get("/advcampaigns/website/{$id}/", [
+                    'limit' => $limit,
+                    'offset' => $offset
+                ])->getResult();
+
+                foreach ($data->results as $result) {
+                    $merchants[] = $result;
+                }
+                $offset += 500;
+            }
         }
 
-        $this->merchants = array_slice($merchants, $offset, $count);
+        $this->merchants = $merchants;
     }
 
     private function saveMerchants()
     {
         foreach ($this->merchants as $merchant) {
-            $link = $this->getLink($merchant['id'], $merchant['site_url']);
+            $domain = rtrim($merchant['site_url'], '/');
+            $domain = str_replace('http://', '', $domain);
+            $domain = str_replace('https://', '', $domain);
+
+            $link = $this->getLink($merchant['id'], $domain);
 
             if ($link) {
                 $this->exists_count++;
+                $link->admitad_id = $merchant['id'];
+                $link->save();
             } else {
                 $link = new Link();
                 $link->title = $merchant['name'];
 //                $link->text = $merchant['description'];
                 $link->call_to_action = 'Buy';
                 $link->active = 1;
-                $link->image = $this->getImageEncoded($merchant['image']);
+                $link->image = ''/*$this->getImageEncoded($merchant['image'])*/;
                 $link->admitad_id = $merchant['id'];
                 $link->save();
 
                 $this->added_count++;
             }
 
-            if (!$link->hasDomain($merchant['site_url'], Link::PARTNER_ADMITAD)) {
+            if (!$link->hasDomain($domain, Link::PARTNER_ADMITAD)) {
                 $model = new LinkDomain();
                 $model->partner_id = Link::PARTNER_ADMITAD;
                 $model->link_id = $link->id;
-                $model->name = $merchant['site_url'];
-                $model->active = 1;
+                $model->name = $domain;
                 $model->affiliate_url = $merchant['gotolink'];
-                $model->save();
+                $model->activate();
 
                 $this->added_domains_count++;
             }

@@ -32,7 +32,7 @@ AppAsset::register($this);
         <router-view></router-view>
     </div>
 
-    <script src="/js/app.js"></script>
+    <script src="/js/app.js?v=1"></script>
     <?php $this->endBody() ?>
 </body>
 

@@ -75,6 +75,20 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         ];
     }
 
+    public function fields()
+    {
+        return [
+            'id',
+            'first_name',
+            'last_name',
+            'avatar',
+            'email',
+            'user_role',
+            'status',
+            'active'
+        ];
+    }
+
     /**
      * {@inheritdoc}
      * @return UserQuery the active query used by this AR class.

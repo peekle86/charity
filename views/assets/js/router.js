@@ -5,6 +5,7 @@ import Home from '@/assets/js/templates/Home.vue';
 import Search from '@/assets/js/templates/Search.vue';
 import PageView from '@/assets/js/templates/PageView.vue';
 import ChangeOrg from '@/assets/js/templates/ChangeOrg.vue';
+import Organization from '@/assets/js/templates/Organization.vue';
 import Login from '@/assets/js/templates/admin/Login.vue';
 import Dashboard from '@/assets/js/templates/admin/Dashboard.vue';
 
@@ -24,6 +25,8 @@ import LangsForm from '@/assets/js/templates/admin/LangsForm.vue';
 import Ads from '@/assets/js/templates/admin/Ads.vue';
 import AdsForm from '@/assets/js/templates/admin/AdsForm.vue';
 
+import ImportLogs from '@/assets/js/templates/admin/ImportLogs.vue';
+
 import Partners from '@/assets/js/templates/admin/Partners.vue';
 import PartnersForm from '@/assets/js/templates/admin/PartnersForm.vue';
 
@@ -37,6 +40,7 @@ import UsersForm from '@/assets/js/templates/admin/UsersForm.vue';
 const routes = [
     { path: "/", component: Home },
     { path: "/change", component: ChangeOrg },
+    { path: "/organization/v/:slug", component: Organization},
     { path: "/reed/:id", component: PageView },
     { path: "/search", component: Search },
 
@@ -64,6 +68,7 @@ const routes = [
     { path: "/ads", component: Ads },
     { path: "/ads/new", component: AdsForm },
     { path: "/ads/edit/:id", component: AdsForm },
+    { path: "/imprt-lgs", component: ImportLogs },
 
     { path: "/prtns", component: Partners },
     { path: "/prtns/new", component: PartnersForm },

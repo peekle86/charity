@@ -14,6 +14,7 @@ if ( $_SERVER['SERVER_ADDR'] == '127.0.0.1' ) {
 
 $config = [
     'id'         => 'basic',
+    'timeZone'   => 'Etc/GMT+0',
     'name'       => 'Charity Site',
     'basePath'   => dirname( __DIR__ ),
     'bootstrap'  => [ 'log' ],
@@ -32,6 +33,7 @@ $config = [
         'request'      => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'gWw7dT0Ou0iCJp8Nwt2SlOCo5qOU1Pvs',
+            'baseUrl' => '',
             'parsers'             => [
                 'application/json' => 'yii\web\JsonParser'
             ]
@@ -132,7 +134,9 @@ $config = [
                 $domain . '/ads'               => 'admin/index',
                 $domain . '/ads/edit/<id:\d+>' => 'admin/index',
                 $domain . '/ads/new'           => 'admin/index',
+                $domain . '/imprt-lgs'         => 'admin/index',
 
+                'organization/s/<slug>' => 'organization/get-json-by-slug',
 
                 //rest api actions//
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'user' ],
@@ -143,8 +147,9 @@ $config = [
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'lang' ],
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'link' ],
                 [ 'class' => 'yii\rest\UrlRule', 'controller' => 'partner' ],
+                [ 'class' => 'yii\rest\UrlRule', 'controller' => 'import-log' ],
 
-                'link-domain/delete/<id:\d+>' => 'link-domain/delete'
+                'link-domain/delete/<id:\d+>' => 'link-domain/delete',
             ],
         ],
     ],

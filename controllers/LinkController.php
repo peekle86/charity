@@ -12,6 +12,10 @@ use yii\rest\ActiveController;
 
 class LinkController extends \yii\rest\ActiveController implements CheckAccessInterface {
     public $modelClass = 'app\models\Link';
+    public $serializer = [
+        'class' => 'yii\rest\Serializer',
+        'collectionEnvelope' => 'items',
+    ];
 
     public function actions()
     {
@@ -34,10 +38,7 @@ class LinkController extends \yii\rest\ActiveController implements CheckAccessIn
                 }
 
                 return new ActiveDataProvider([
-
                     'query' => $query,
-
-                    'pagination' => false,
 
                 ]);
 

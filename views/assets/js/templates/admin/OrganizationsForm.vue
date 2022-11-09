@@ -8,38 +8,55 @@
                         
                         <div class="col-xl-12 mt-3 w-100">
                             <b-form @submit.prevent.stop="save_item">
-    
-    
-                                <b-form-group label="Name:" label-for="input-2">
+                              <b-tabs content-class="mt-3" align="center">
+                                <b-tab title="Info" active>
+                                  <b-form-group label="Name:" label-for="input-2">
                                     <b-form-input v-model="item.name" placeholder="Enter name" required></b-form-input>
-                                </b-form-group>
+                                  </b-form-group>
 
-                                
-                                <b-form-group label="Email:" label-for="input-2">
+                                  <b-form-group label="Email:" label-for="input-2">
                                     <b-form-input v-model="item.email" placeholder="Enter email" required></b-form-input>
-                                </b-form-group>
-    
-                                <b-form-group label="Description:" label-for="input-2">
-                                  <vue2-tinymce-editor v-model="item.description" :options="editor_options"></vue2-tinymce-editor>
-                                </b-form-group>
+                                  </b-form-group>
 
-                              <b-form-group label="Url:" label-for="input-2">
-                                    <b-form-input v-model="item.url" placeholder="Enter url" required></b-form-input>
-                                </b-form-group>
-                                
-                                
-                                <b-form-group label="Category:" label-for="input-3">
+                                  <b-form-group label="Short description:" label-for="input-2">
+                                    <vue2-tinymce-editor v-model="item.description" :options="editor_options"></vue2-tinymce-editor>
+                                  </b-form-group>
+
+                                  <b-form-group label="Category:" label-for="input-3">
                                     <b-form-select
                                         id="input-3"
                                         v-model="item.category_id"
                                         :options="categories"
                                         required
                                     ></b-form-select>
-                                </b-form-group>
-                                <b-form-group label="Image:"  :class="{'has_image': item.logo}" label-for="input-2">
+                                  </b-form-group>
+                                  <b-form-group label="Image:"  :class="{'has_image': item.logo}" label-for="input-2">
                                     <img v-show="item.logo" :src="item.logo" style=" height: 50px" >
                                     <b-form-file accept="image/*" @change="setImage" v-model="item.logo" placeholder=""></b-form-file>
-                                </b-form-group>
+                                  </b-form-group>
+                                </b-tab>
+                                <b-tab title="Page">
+
+                                  <b-form-group label="Slug:" v-b-tooltip.hover title="Will generate automatically from 'Title' if empty" label-for="input-2">
+                                    <b-form-input v-model="item.slug"></b-form-input>
+                                  </b-form-group>
+
+                                  <b-form-group label="Title:" label-for="input-2">
+                                    <b-form-input v-model="item.title" placeholder="Enter page title" required></b-form-input>
+                                  </b-form-group>
+
+                                  <b-form-group label="Content:" label-for="input-2">
+                                    <vue2-tinymce-editor v-model="item.content" :options="editor_options"></vue2-tinymce-editor>
+                                  </b-form-group>
+
+                                  <b-form-group label="Url:" label-for="input-2">
+                                    <b-form-input v-model="item.url" placeholder="Enter url" required></b-form-input>
+                                  </b-form-group>
+
+                                </b-tab>
+                              </b-tabs>
+    
+
                                 <b-button type="submit" variant="primary">Submit</b-button>
                                 <b-button v-on:click="go_back" variant="danger">Back</b-button>
                                 <div v-show="show_message" class="status">{{message}}</div>
@@ -79,6 +96,9 @@ export default {
             email: null,
             logo: null,
             category_id: null,
+            slug: null,
+            title: null,
+            content: null,
         },
         categories: null,
         show_message: false,
@@ -109,7 +129,13 @@ export default {
     filters: {},
     methods: {
         reload: function () {
-        
+          if (this.$route.params.id) {
+            this.edit = true;
+            Vue.axios
+                .get('/organizations/'+this.$route.params.id).then(res => {
+              this.item = res.data;
+            });
+          }
         },
         go_back: function () {
             this.$router.push('/orgs');

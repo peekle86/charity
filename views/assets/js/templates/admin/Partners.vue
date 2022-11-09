@@ -80,7 +80,7 @@ export default {
                     callback: confirm => {
                         if (confirm) {
                             Vue.axios
-                                .delete('/partner/' + id)
+                                .delete('/partners/' + id)
                                 .then(res => (this.reload()));
                         }
                     }

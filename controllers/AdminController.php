@@ -65,6 +65,14 @@ class AdminController extends Controller
         ];
     }
 
+    public function actionTest()
+    {
+        var_dump(Link::find()
+            ->joinWith('domains')
+            ->where(['link_domain.partner_id' => Link::PARTNER_ADGOAL])
+            ->count());
+    }
+
     /**
      * Displays homepage.
      *
@@ -113,7 +121,7 @@ class AdminController extends Controller
 
         $cookies = Yii::$app->request->cookies;
 
-        $language = $_COOKIE['lang'];
+        $language = $_COOKIE['lang'] ?? Yii::$app->language;
 
         $page_slug = Yii::$app->request->post('slug');
 

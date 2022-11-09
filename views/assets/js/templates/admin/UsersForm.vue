@@ -10,12 +10,19 @@
                             <b-form @submit.prevent.stop="save_item">
     
     
-                                <b-form-group label="Name:" label-for="input-2">
-                                    <b-form-input v-model="item.first_name" placeholder="Enter name" required></b-form-input>
+                                <b-form-group label="First Name:" label-for="input-2">
+                                    <b-form-input v-model="item.first_name" placeholder="Enter first name" required></b-form-input>
+                                </b-form-group>
+                                <b-form-group label="Last Name:" label-for="input-2">
+                                    <b-form-input v-model="item.last_name" placeholder="Enter last name" required></b-form-input>
                                 </b-form-group>
                                 
                                 <b-form-group  label="Email:" label-for="input-2">
                                     <b-form-input v-model="item.email" placeholder="Enter email" required></b-form-input>
+                                </b-form-group>
+
+                                <b-form-group  label="Password:" label-for="input-2">
+                                    <b-form-input v-model="item.password" placeholder="Enter password" type="password"></b-form-input>
                                 </b-form-group>
                                 
                                 <b-form-group id="input-group-3" label="User Role:" label-for="input-3">
@@ -26,6 +33,11 @@
                                         required
                                     ></b-form-select>
                                 </b-form-group>
+
+                              <b-form-group  label="Active:" label-for="input-2">
+                                <b-icon v-on:click="toggle_active(item)" font-scale="3" v-if="item.active === 0" icon="toggle-off" variant="danger"></b-icon>
+                                <b-icon v-on:click="toggle_active(item)" font-scale="3" v-if="item.active === 1" icon="toggle-on" variant="success"></b-icon>
+                              </b-form-group>
                                 
                                 <b-button type="submit" variant="primary">Submit</b-button>
                                 <b-button v-on:click="go_back" variant="danger">Back</b-button>
@@ -50,15 +62,16 @@
 import SideBar from "@ad/SideBar.vue";
 
 export default {
-    name: "Organization",
+    name: "User form",
     data: () => ({
         items: null,
-        fields: ['name', 'url', 'description', 'email', 'logo'],
-        id: 'organizations',
+        id: 'user_form',
         number: null,
         edit: false,
         item: {
             first_name: null,
+            last_name: null,
+            password: null,
             email: null,
             active: null,
             user_role: null,
@@ -112,6 +125,18 @@ export default {
                     }
                     this.user_roles = ret;
                 });
+        },
+
+        toggle_active: function (item) {
+          if (item.active === 0) {
+            item.active = 1;
+          } else {
+            item.active = 0;
+          }
+          Vue.axios
+              .put('/users/' + item.id, item)
+              .then(res => (this.reload()));
+
         },
     },
     components: {

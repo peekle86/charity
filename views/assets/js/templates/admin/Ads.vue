@@ -18,7 +18,7 @@
                           @dismissed="dismissCountDown=0"
                           @dismiss-count-down="countDownChanged"
                       >
-                        Було додано: {{ importResult.added }}  нових мерчантів. Пропущено по причині існування в базі: {{ importResult.exists }}
+                        Розпочато процес імпорту мерчантів. Цей процес може зайняти декілька хвилин.
                       </b-alert>
 
                         <div class="col-xl-12 d-flex justify-content-end">
@@ -27,7 +27,7 @@
 
                           <b-button class="mx-2" v-b-modal.importModal>Імпорт</b-button>
 
-                            <b-modal id="importModal" title="Імпорт від партнерів" @ok="partner_import" :ok-disabled="submitButtonDisabled">
+                            <b-modal id="importModal" title="Імпорт від партнерів" @ok="partner_import">
                               <b-form @submit.prevent.stop="partner_import">
 
                                 <b-form-group label="Партнер:" label-for="input-2">
@@ -35,18 +35,6 @@
                                                  v-model="importModel.partner_id"
                                                  :options="importModelOptions" required></b-form-select>
                                 </b-form-group>
-
-
-                                <b-row class="my-1">
-                                  <b-col sm="6">
-                                      <label for="importFormCount">Кількість мерчантів:</label>
-                                      <b-form-input id="importFormCount" v-model="importModel.count" placeholder="" type="number"></b-form-input>
-                                  </b-col>
-                                  <b-col sm="6">
-                                      <label for="importFormOffset">Пропустити:</label>
-                                      <b-form-input id="importFormOffset" v-model="importModel.offset" placeholder="" type="number"></b-form-input>
-                                  </b-col>
-                                </b-row>
 
                               </b-form>
                             </b-modal>
@@ -62,7 +50,7 @@
                                     </div>
                                 </div>
                                 <div id="itemList" class="dash__body">
-                                    <div class="body__line  text-center" v-for="(item) in itemsForList" :key="item.id">
+                                    <div class="body__line  text-center" v-for="(item) in items" :key="item.id">
                                         <div class="body__cell">{{ item.id }}</div>
                                         <div class="body__cell">{{ item.title }}</div>
                                         <div class="body__cell">
@@ -86,13 +74,15 @@
                             </div>
                         </div>
 
-                      <b-pagination
+                      <b-pagination-nav
                           v-model="currentPage"
-                          :total-rows="rows"
-                          :per-page="perPage"
-                          aria-controls="itemList"
+                          :link-gen="linkGen"
+                          :number-of-pages="numberOfPages"
+                          @page-click="change_page"
                           align="center"
-                      ></b-pagination>
+                          use-router
+                      ></b-pagination-nav>
+
                     </div>
                 </div>
             </div>
@@ -118,7 +108,6 @@ export default {
             offset: 0
         },
         importModelOptions: null,
-        submitButtonDisabled: false,
         dismissSecs: 10,
         dismissCountDown: 0,
         importResult: {
@@ -129,7 +118,9 @@ export default {
       perPage: 20,
       rows: 0,
       itemsForList: [],
-      search: null
+      search: null,
+      currentUrl: null,
+      numberOfPages: 0,
     }),
     computed: {},
     mounted() {
@@ -139,18 +130,24 @@ export default {
     filters: {},
     methods: {
         
-        reload: function () {
+        reload: function (page = 0) {
           let url = '/links?expand=activeDomain';
           if (this.search) {
             url = '/links?expand=activeDomain&q=' + this.search
           }
 
+          if (page) {
+            url += '&page=' + page
+          }
+
             Vue.axios
                 .get(url)
                 .then(res => {
-                  this.items = res.data
+                  this.currentUrl = res.data._links.self.href;
+                  let pagesArray = res.data._links.last.href.split('=')
+                  this.numberOfPages = pagesArray[pagesArray.length - 1]
+                  this.items = res.data.items
                   this.rows = this.items.length
-                  this.getItemsForList()
                 });
         },
         add_item: function () {
@@ -192,51 +189,32 @@ export default {
 
         get_partners: function () {
           Vue.axios
-              .get('/partner/get-custom')
+              .get('/partner/get-importers')
               .then(res => (this.importModelOptions = res.data));
         },
 
-        partner_import: function (bvModalEvent) {
-          bvModalEvent.preventDefault();
-          this.submitButtonDisabled = true
-
+        partner_import: function () {
           Vue.axios
               .post('/partner/import', this.importModel)
-              .then(res => {
-                  this.reload()
-                  this.dismissCountDown = this.dismissSecs
-                  this.importResult = res.data
-                  this.$nextTick(() => {
-                      this.$bvModal.hide('importModal')
-                  })
-              })
-              .finally(() => {
-                  this.submitButtonDisabled = false
-              })
+
+          this.dismissCountDown = this.dismissSecs
+
         },
 
         countDownChanged(dismissCountDown) {
           this.dismissCountDown = dismissCountDown
         },
 
-      getItemsForList: function () {
-          if (Array.isArray(this.items)) {
-            this.itemsForList = this.items.slice(
-                (this.currentPage - 1) * this.perPage,
-                this.currentPage * this.perPage,
-            );
-          }
-      }
+        linkGen(pageNum) {
+          return '#'
+        },
 
-    },
-    watch: {
-      currentPage: {
-        immediate: true,
-        deep: true,
-        handler(newValue, oldValue) {
-          this.getItemsForList()
-        }
-      }
+      change_page: function (bvEvent, page) {
+          console.log(page)
+        this.reload(page);
+      },
+
+
     },
     components: {
         SideBar,

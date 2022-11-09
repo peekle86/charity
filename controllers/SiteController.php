@@ -89,11 +89,15 @@ class SiteController extends Controller
         $linkDomain = $link->activeDomain;
 
         if ($linkDomain) {
-            return $this->redirect($linkDomain['affiliate_url']);
-        } else {
-            return $this->redirect('/');
+            $cookies = Yii::$app->response->cookies;
+            $cookies->add(new \yii\web\Cookie([
+                'name' => 'redirect_url',
+                'value' => $linkDomain['affiliate_url'],
+                'httpOnly' => false
+            ]));
         }
 
+        return $this->redirect('/');
     }
 
 }

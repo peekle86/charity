@@ -13,6 +13,7 @@
                     <router-link to="/usr" tag="li" active-class="innerAside__active" exact>Users</router-link>
                     <router-link to="/pgs" tag="li" active-class="innerAside__active" exact>Pages</router-link>
                     <router-link to="/ads" tag="li" active-class="innerAside__active" exact>Ads</router-link>
+                    <router-link to="/imprt-lgs" tag="li" active-class="innerAside__active" exact>Cron import logs</router-link>
                     <router-link to="/prtns" tag="li" active-class="innerAside__active" exact>Partners</router-link>
                     <li v-on:click="logout()">Logout</li>
                 </ul>

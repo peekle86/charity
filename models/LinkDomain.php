@@ -45,4 +45,16 @@ class LinkDomain extends ActiveRecord
         return $this->hasOne(Link::class, ['id' => 'link_id']);
     }
 
+    public function activate()
+    {
+        foreach ($this->link->domains as $domain) {
+            $domain->active = 0;
+            $domain->save();
+        }
+
+        $this->active = 1;
+        $this->save();
+    }
+
+
 }

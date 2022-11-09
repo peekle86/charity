@@ -19,7 +19,7 @@
                     <h1>{{title}}</h1>
                 </div>
                 <div class="col-12 mt-3">
-                    {{content}}
+                    <div v-html="content"></div>
                 </div>
             </div>
 

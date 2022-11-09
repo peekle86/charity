@@ -15,6 +15,10 @@ class Adgoal extends \yii\base\Model
     public $added_count = 0;
 
     public $added_domains_count = 0;
+    public $old_domains_count = 0;
+    public $new_domains_count = 0;
+
+    public $time_spent = 0;
 
     private $base_url = 'https://api.smartredirect.de/api_v2/getAffPrograms.php';
     private $public_key = 'Ddyxt4kHUd';
@@ -25,13 +29,21 @@ class Adgoal extends \yii\base\Model
     private $profile_hash = 'JrqDXkw1';
 
 
-    public function collect(int $countToCheck = 10, int $offset = 0)
+    public function collect()
     {
-        $this->setMerchantsList($countToCheck, $offset);
+        $start_time = microtime(true);
+
+        $this->old_domains_count = LinkDomain::find()->where(['partner_id' => Link::PARTNER_ADGOAL])->count();
+        LinkDomain::deleteAll(['partner_id' => Link::PARTNER_ADGOAL]);
+
+        $this->setMerchantsList();
         $this->saveMerchants();
+
+        $this->time_spent = microtime(true) - $start_time;
+        $this->new_domains_count = $this->added_domains_count - $this->old_domains_count;
     }
 
-    private function setMerchantsList(int $count = 10, int  $offset = 0)
+    private function setMerchantsList()
     {
         $unix_time = time();
 
@@ -47,7 +59,6 @@ class Adgoal extends \yii\base\Model
         curl_close($ch);
 
         $array = Json::decode($response);
-        $array = array_slice($array, $offset, $count);
 
         $this->merchants = $array;
     }
@@ -63,14 +74,19 @@ class Adgoal extends \yii\base\Model
 
             if ($link) {
                 $this->exists_count++;
+                $link->adgoal_id = $merchant['merchants_id'];
+                $link->save();
             } else {
-                $short_name = stristr($merchant['domains'][0], '.', true);
+                $short_name = array_reduce(explode('.', $merchant['domains'][0]), function($carry, $item) {
+                    return mb_strlen($carry, 'utf-8') < mb_strlen($item, 'utf-8') ? $item : $carry;
+                }, '');
+
                 $link = new Link();
                 $link->name = $short_name;
                 $link->title = $short_name;
                 $link->call_to_action = 'Buy';
                 $link->active = 1;
-                $link->image = $this->getImageEncoded($merchant['logo']);
+                $link->image = ''/*$this->getImageEncoded($merchant['logo'])*/;
                 $link->adgoal_id = $merchant['merchants_id'];
                 $link->save();
 
@@ -78,12 +94,21 @@ class Adgoal extends \yii\base\Model
             }
 
             foreach ($merchant['domains'] as $key => $domain) {
+                $domain = rtrim($domain, '/');
+                $domain = str_replace('http://', '', $domain);
+                $domain = str_replace('https://', '', $domain);
+
                 if (!$link->hasDomain($domain, Link::PARTNER_ADGOAL)) {
+                    $active = 0;
+                    if (!$link->activeDomain && $key == 0) {
+                        $active = 1;
+                    }
+
                     $model = new LinkDomain();
                     $model->partner_id = Link::PARTNER_ADGOAL;
                     $model->link_id = $link->id;
                     $model->name = $domain;
-                    $model->active = $key === 0 ? 1 : 0;
+                    $model->active = $active;
                     $model->affiliate_url = $this->generateAffiliateUrl($merchant['merchants_id'], $domain);
                     $model->save();
 
@@ -104,15 +129,6 @@ class Adgoal extends \yii\base\Model
             $link = Link::find()
                 ->joinWith('domains')
                 ->where(['link_domain.name' => $domain])
-                ->limit(1)
-                ->one();
-        }
-
-        if (!$link) {
-            $short_name = stristr($domain, '.', true);
-            $link = Link::find()
-                ->where(['name' => $short_name])
-                ->orWhere(['title' => $short_name])
                 ->limit(1)
                 ->one();
         }

@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\API\Adgoal;
 use app\models\API\Admitad;
+use app\models\ImportLog;
 use app\models\Link;
 use app\models\Partner;
 use yii\filters\VerbFilter;
@@ -33,26 +34,70 @@ class PartnerController extends ActiveController
         return $this->asJson($result);
     }
 
+    public function actionGetImporters()
+    {
+        $partners = Link::ALL_PARTNERS;
+        $result = [];
+        $result[] = [
+            'value' => 'all',
+            'text' => 'All partners'
+        ];
+
+        foreach ($partners as $id => $partner) {
+            $result[] = [
+                'value' => $id,
+                'text' => $partner
+            ];
+        }
+
+        return $this->asJson($result);
+    }
+
     public function actionImport()
     {
         $partner_id = $this->request->post('partner_id');
-        $count = $this->request->post('count');
-        $offset = $this->request->post('offset');
+        $log = new ImportLog();
+        $log->status = 'In process';
+        $log->save();
 
         if ($partner_id == Link::PARTNER_ADGOAL) {
             $importer = new Adgoal();
+            $partners = 'Adgoal';
         } elseif ($partner_id == Link::PARTNER_ADMITAD) {
             $importer = new Admitad();
+            $partners = 'Admitad';
         } else {
-            throw new NotFoundHttpException('Partner not found');
+            $importer = [
+                new Adgoal(),
+                new Admitad()
+            ];
+            $partners = 'Adgoal, Admitad';
         }
 
-        $importer->collect($count, $offset);
+        $new_merchants_count = 0;
+        $new_domains_count = 0;
+        $time_spent = 0;
 
-        return $this->asJson([
-            'added' => $importer->added_count,
-            'exists' => $importer->exists_count
-        ]);
+        if (is_array($importer)) {
+            foreach ($importer as $item) {
+                $item->collect();
+                $new_merchants_count += $item->added_count;
+                $new_domains_count += $item->new_domains_count;
+                $time_spent += $item->time_spent;
+            }
+        } else {
+            $importer->collect();
+            $new_merchants_count += $importer->added_count;
+            $new_domains_count += $importer->new_domains_count;
+            $time_spent += $importer->time_spent;
+        }
+
+        $log->partners = $partners;
+        $log->new_merchants = $new_merchants_count;
+        $log->new_domains = $new_domains_count;
+        $log->time = date("H:i:s", $time_spent);
+        $log->status = 'Done';
+        $log->save();
     }
 
 }

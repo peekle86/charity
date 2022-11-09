@@ -37,5 +37,12 @@ class OrganizationController extends \yii\rest\ActiveController implements Check
         }
     }
 
+    public function actionGetJsonBySlug($slug)
+    {
+        $organization = Organization::findOne(['slug' => $slug]);
+
+        return $this->asJson($organization);
+    }
+
 }
 

@@ -20,20 +20,26 @@
                 <div class="col-md-12 ">
                     <b-tabs content-class="mt-3" align="center">
                         <b-tab v-for="(cat) in cats" v-bind:title="cat.name" v-bind:key="cat.id" active>
-                            <b-card v-if="org.category_id === cat.id" v-for="(org) in support_list" v-bind:key="org.id"
+                          <div  v-if="org.category_id === cat.id" v-for="(org) in support_list" v-bind:key="org.id"
+                                class="col-md-3 px-0 pb-1 pl-1">
+                            <b-card
                                 v-bind:title="org.name"
                                 v-bind:img-src="org.logo"
                                 v-bind:img-alt="org.name"
                                 img-top
                                 tag="article"
-                                style="max-width: 20rem;"
-                                class="mb-2 ml-2 org_card"
+                                class="org_card w-100"
                             >
                                 <b-card-text v-html="org.description">
                                 </b-card-text>
-
+                              <p class="text-center">
                                 <b-button v-on:click="changeSupport(org.id)" href="#" variant="primary">Select for support</b-button>
+                              </p>
+                              <p class="text-center mb-0">
+                                <b-link v-bind:href="'/organization/v/'+org.slug">More info</b-link>
+                              </p>
                             </b-card>
+                          </div>
                         </b-tab>
                     </b-tabs>
 
@@ -104,7 +110,8 @@ export default {
                     this.support = one.text;
                 }
             }
-        }
+        },
+
     },
     mounted() {
 
