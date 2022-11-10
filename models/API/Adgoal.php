@@ -4,6 +4,7 @@ namespace app\models\API;
 
 use app\models\Link;
 use app\models\LinkDomain;
+use app\models\Partner;
 use yii\helpers\Json;
 
 class Adgoal extends \yii\base\Model
@@ -21,12 +22,20 @@ class Adgoal extends \yii\base\Model
     public $time_spent = 0;
 
     private $base_url = 'https://api.smartredirect.de/api_v2/getAffPrograms.php';
-    private $public_key = 'Ddyxt4kHUd';
-    private $private_key = 'hJHbMIJ3Ih3V3FNqo11zw5OdTzsjSD5h';
+    private $public_key;
+    private $private_key;
 
     private $user_hash = 'tkoDLLu5';
     private $panel_hash = 'rMcIPnDNf0';
     private $profile_hash = 'JrqDXkw1';
+
+    public function __construct($config = [])
+    {
+        $this->public_key = Partner::getPublicKey(Link::PARTNER_ADGOAL);
+        $this->private_key = Partner::getPrivateKey(Link::PARTNER_ADGOAL);
+
+        parent::__construct($config);
+    }
 
 
     public function collect()

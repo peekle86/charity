@@ -14,6 +14,14 @@
                                     <b-form-input v-model="item.title" placeholder="" required></b-form-input>
                                 </b-form-group>
 
+                                <b-form-group v-if="item.id == 1 || item.id == 2" :label="this.label_public" label-for="input-2">
+                                    <b-form-input v-model="item.public_key" placeholder=""></b-form-input>
+                                </b-form-group>
+
+                                <b-form-group v-if="item.id == 1 || item.id == 2" :label="this.label_secret" label-for="input-2">
+                                    <b-form-input v-model="item.secret_key" placeholder=""></b-form-input>
+                                </b-form-group>
+
                                 <b-button type="submit" variant="primary">Submit</b-button>
                                 <b-button v-on:click="go_back" variant="danger">Back</b-button>
                                 <div v-show="show_message" class="status">{{message}}</div>
@@ -51,6 +59,8 @@ export default {
         },
         show_message: false,
         message: 'Saved',
+      label_public: null,
+      label_secret: null,
     }),
     computed: {},
     mounted() {
@@ -61,6 +71,13 @@ export default {
             Vue.axios
                 .get('/partners/'+this.$route.params.id).then(res => {
                 this.item = res.data;
+                if (this.item.id == 1) {
+                  this.label_public = 'Public key'
+                  this.label_secret = 'Secret key'
+                } else if (this.item.id == 2) {
+                  this.label_public = 'Client id'
+                  this.label_secret = 'Client secret'
+                }
             });
         }
     },

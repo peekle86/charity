@@ -5,6 +5,7 @@ namespace app\models\API;
 use Admitad\Api\Api;
 use app\models\Link;
 use app\models\LinkDomain;
+use app\models\Partner;
 use app\models\Setting;
 use yii\helpers\Json;
 use yii\web\BadRequestHttpException;
@@ -39,8 +40,8 @@ class Admitad extends \yii\base\Model
 
     public function __construct($config = [])
     {
-        $this->client_id = Setting::getValue('admitad_client_id');
-        $this->client_secret = Setting::getValue('admitad_client_secret');
+        $this->client_id = Partner::getPublicKey(Link::PARTNER_ADMITAD);
+        $this->client_secret = Partner::getPrivateKey(Link::PARTNER_ADMITAD);
 
         $this->access_token = Setting::getValue('admitad_access_token');
         $this->refresh_token = Setting::getValue('admitad_refresh_token');
