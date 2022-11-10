@@ -2,11 +2,13 @@
 
 namespace app\controllers;
 
+use app\jobs\ImportJob;
 use app\models\API\Adgoal;
 use app\models\API\Admitad;
 use app\models\ImportLog;
 use app\models\Link;
 use app\models\Partner;
+use Yii;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
 use yii\rest\ActiveController;
@@ -56,9 +58,6 @@ class PartnerController extends ActiveController
     public function actionImport()
     {
         $partner_id = $this->request->post('partner_id');
-        $log = new ImportLog();
-        $log->status = 'In process';
-        $log->save();
 
         if ($partner_id == Link::PARTNER_ADGOAL) {
             $importer = new Adgoal();
@@ -68,11 +67,16 @@ class PartnerController extends ActiveController
             $partners = 'Admitad';
         } else {
             $importer = [
+                new Admitad(),
                 new Adgoal(),
-                new Admitad()
             ];
             $partners = 'Adgoal, Admitad';
         }
+
+        $log = new ImportLog();
+        $log->status = 'In process';
+        $log->partners = $partners;
+        $log->save();
 
         $new_merchants_count = 0;
         $new_domains_count = 0;
@@ -80,24 +84,38 @@ class PartnerController extends ActiveController
 
         if (is_array($importer)) {
             foreach ($importer as $item) {
-                $item->collect();
-                $new_merchants_count += $item->added_count;
-                $new_domains_count += $item->new_domains_count;
-                $time_spent += $item->time_spent;
+                Yii::$app->queue->push(new ImportJob([
+                    'importer' => $item,
+                    'log_id' => $log->id,
+                ]));
+//                $item->collect();
+//                $new_merchants_count += $item->added_count;
+//                $new_domains_count += $item->new_domains_count;
+//                $time_spent += $item->time_spent;
             }
         } else {
-            $importer->collect();
-            $new_merchants_count += $importer->added_count;
-            $new_domains_count += $importer->new_domains_count;
-            $time_spent += $importer->time_spent;
+            Yii::$app->queue->push(new ImportJob([
+                'importer' => $importer,
+                'log_id' => $log->id,
+            ]));
+//            $importer->collect();
+//            $new_merchants_count += $importer->added_count;
+//            $new_domains_count += $importer->new_domains_count;
+//            $time_spent += $importer->time_spent;
         }
 
-        $log->partners = $partners;
-        $log->new_merchants = $new_merchants_count;
-        $log->new_domains = $new_domains_count;
-        $log->time = date("H:i:s", $time_spent);
-        $log->status = 'Done';
-        $log->save();
+
+//        $queue = Yii::$app->queue;
+//        $queue->run(false);
+
+        return true;
+
+
+//        $log->new_merchants = $new_merchants_count;
+//        $log->new_domains = $new_domains_count;
+//        $log->time = date("H:i:s", $time_spent);
+//        $log->status = 'Done';
+//        $log->save();
     }
 
 }

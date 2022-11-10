@@ -19,11 +19,11 @@
                 @dismissed="dismissCountDown=0"
                 @dismiss-count-down="countDownChanged"
             >
-              Розпочато процес імпорту мерчантів. Цей процес може зайняти декілька хвилин.
+              The process of importing merchants has started. This process may take several minutes.
             </b-alert>
             <div class="col-xl-12 d-flex justify-content-end">
 
-              <b-button class="mx-2" v-b-modal.importModal @click="partner_import">Імпорт</b-button>
+              <b-button class="mx-2" v-b-modal.importModal @click="partner_import">Import</b-button>
 
             </div>
 

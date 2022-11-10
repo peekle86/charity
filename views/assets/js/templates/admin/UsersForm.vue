@@ -34,7 +34,7 @@
                                     ></b-form-select>
                                 </b-form-group>
 
-                              <b-form-group  label="Active:" label-for="input-2">
+                              <b-form-group v-if="item.id" label="Active:" label-for="input-2">
                                 <b-icon v-on:click="toggle_active(item)" font-scale="3" v-if="item.active === 0" icon="toggle-off" variant="danger"></b-icon>
                                 <b-icon v-on:click="toggle_active(item)" font-scale="3" v-if="item.active === 1" icon="toggle-on" variant="success"></b-icon>
                               </b-form-group>
@@ -62,7 +62,7 @@
 import SideBar from "@ad/SideBar.vue";
 
 export default {
-    name: "User form",
+    name: "UserForm",
     data: () => ({
         items: null,
         id: 'user_form',

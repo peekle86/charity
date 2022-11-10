@@ -17,7 +17,10 @@ $config = [
     'timeZone'   => 'Etc/GMT+0',
     'name'       => 'Charity Site',
     'basePath'   => dirname( __DIR__ ),
-    'bootstrap'  => [ 'log' ],
+    'bootstrap'  => [
+        'log',
+        'queue'
+    ],
     'aliases'    => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -152,25 +155,36 @@ $config = [
                 'link-domain/delete/<id:\d+>' => 'link-domain/delete',
             ],
         ],
+        'queue' => [
+            'class' => \yii\queue\file\Queue::class,
+            'path' => '@runtime/queue',
+            'as log' => \yii\queue\LogBehavior::class,
+            'ttr' => 6000
+        ],
     ],
     'params'     => $params,
 ];
 
-//if ( YII_ENV_DEV ) {
-//    // configuration adjustments for 'dev' environment
-//    $config['bootstrap'][]      = 'debug';
-//    $config['modules']['debug'] = [
-//        'class' => 'yii\debug\Module',
-//        // uncomment the following to add your IP if you are not connecting from localhost.
-//        //'allowedIPs' => ['127.0.0.1', '::1'],
-//    ];
-//
-//    $config['bootstrap'][]    = 'gii';
-//    $config['modules']['gii'] = [
-//        'class' => 'yii\gii\Module',
-//        // uncomment the following to add your IP if you are not connecting from localhost.
-//        //'allowedIPs' => ['127.0.0.1', '::1'],
-//    ];
-//}
+if ( YII_ENV_DEV ) {
+    // configuration adjustments for 'dev' environment
+    $config['bootstrap'][]      = 'debug';
+    $config['modules']['debug'] = [
+        'class' => 'yii\debug\Module',
+        // uncomment the following to add your IP if you are not connecting from localhost.
+        'allowedIPs' => ['*'],
+    ];
+
+    $config['bootstrap'][]    = 'gii';
+    $config['modules']['gii'] = [
+        'class' => 'yii\gii\Module',
+        'generators' => [
+            'job' => [
+                'class' => \yii\queue\gii\Generator::class,
+            ],
+        ],
+        // uncomment the following to add your IP if you are not connecting from localhost.
+        'allowedIPs' => ['*'],
+    ];
+}
 
 return $config;

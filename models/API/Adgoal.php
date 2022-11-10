@@ -43,7 +43,7 @@ class Adgoal extends \yii\base\Model
         $this->new_domains_count = $this->added_domains_count - $this->old_domains_count;
     }
 
-    private function setMerchantsList()
+    public function setMerchantsList()
     {
         $unix_time = time();
 
@@ -97,6 +97,7 @@ class Adgoal extends \yii\base\Model
                 $domain = rtrim($domain, '/');
                 $domain = str_replace('http://', '', $domain);
                 $domain = str_replace('https://', '', $domain);
+                $domain = str_replace('www.', '', $domain);
 
                 if (!$link->hasDomain($domain, Link::PARTNER_ADGOAL)) {
                     $active = 0;
@@ -136,7 +137,7 @@ class Adgoal extends \yii\base\Model
         return $link;
     }
 
-    private function getImageEncoded($raw_url)
+    public function getImageEncoded($raw_url)
     {
         $path = str_replace('/90x45/', '/120x60/', $raw_url);
         $type = pathinfo($path, PATHINFO_EXTENSION);

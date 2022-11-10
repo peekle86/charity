@@ -32,8 +32,8 @@ class ImportLog extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['partners', 'time', 'status'], 'string'],
-            [['new_merchants', 'new_domains'], 'integer'],
+            [['partners', 'status'], 'string'],
+            [['new_merchants', 'time', 'new_domains'], 'integer'],
         ];
     }
 
@@ -43,7 +43,9 @@ class ImportLog extends \yii\db\ActiveRecord
             'partners',
             'new_merchants',
             'new_domains',
-            'time',
+            'time' => function () {
+                return date('H:i:s', $this->time);
+            },
             'status',
             'cron_started' => function () {
                 return Yii::$app->formatter->asDate($this->created_at, 'php:H:i:s d.m.y');

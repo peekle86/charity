@@ -18,19 +18,19 @@
                           @dismissed="dismissCountDown=0"
                           @dismiss-count-down="countDownChanged"
                       >
-                        Розпочато процес імпорту мерчантів. Цей процес може зайняти декілька хвилин.
+                        The process of importing merchants has started. This process may take several minutes.
                       </b-alert>
 
                         <div class="col-xl-12 d-flex justify-content-end">
 
                           <b-form-input @input="reload" class="mr-3 col-3" id="searchInput" v-model="search" placeholder="Search..." type="text"></b-form-input>
 
-                          <b-button class="mx-2" v-b-modal.importModal>Імпорт</b-button>
+                          <b-button class="mx-2" v-b-modal.importModal>Import</b-button>
 
-                            <b-modal id="importModal" title="Імпорт від партнерів" @ok="partner_import">
+                            <b-modal id="importModal" title="Partners import" @ok="partner_import">
                               <b-form @submit.prevent.stop="partner_import">
 
-                                <b-form-group label="Партнер:" label-for="input-2">
+                                <b-form-group label="Partner:" label-for="input-2">
                                   <b-form-select v-bind:class="{'is-invalid' : !importModel.partner_id}"
                                                  v-model="importModel.partner_id"
                                                  :options="importModelOptions" required></b-form-select>
@@ -75,6 +75,7 @@
                         </div>
 
                       <b-pagination-nav
+                          v-if="items"
                           v-model="currentPage"
                           :link-gen="linkGen"
                           :number-of-pages="numberOfPages"

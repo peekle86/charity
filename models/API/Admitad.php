@@ -153,6 +153,7 @@ class Admitad extends \yii\base\Model
             $domain = rtrim($merchant['site_url'], '/');
             $domain = str_replace('http://', '', $domain);
             $domain = str_replace('https://', '', $domain);
+            $domain = str_replace('www.', '', $domain);
 
             $link = $this->getLink($merchant['id'], $domain);
 
@@ -179,7 +180,12 @@ class Admitad extends \yii\base\Model
                 $model->link_id = $link->id;
                 $model->name = $domain;
                 $model->affiliate_url = $merchant['gotolink'];
-                $model->activate();
+                if ($model->affiliate_url) {
+                    $model->activate();
+                } else {
+                    $model->active = 0;
+                    $model->save();
+                }
 
                 $this->added_domains_count++;
             }
