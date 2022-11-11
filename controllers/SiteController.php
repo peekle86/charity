@@ -66,16 +66,17 @@ class SiteController extends Controller
     /**
      * Displays homepage.
      *
-     * @return string س
+     * @return mixed س
      */
     public function actionIndex()
     {
-//        $admitad = new Admitad();
-//        $admitad->collect();
+//        $session = Yii::$app->session;
+//        if ($session->has('redirect_url')) {
+//            $url = $session->get('redirect_url');
+//            $session->remove('redirect_url');
 //
-//        echo 'Було додано: ' . $adgoal->added_count . ' нових посилань/магазинів'
-//            . PHP_EOL
-//            . 'Пропущено по причині існування в базі: ' . $adgoal->exists_count;
+//            return $this->redirect($url);
+//        }
 
        return $this->render('index');
     }
@@ -89,6 +90,9 @@ class SiteController extends Controller
         $linkDomain = $link->activeDomain;
 
         if ($linkDomain) {
+//            $session = Yii::$app->session;
+//            $session->set('redirect_url', $linkDomain['affiliate_url']);
+
             $cookies = Yii::$app->response->cookies;
             $cookies->add(new \yii\web\Cookie([
                 'name' => 'redirect_url',
