@@ -115,15 +115,15 @@ export default {
             }
         }
     },
-    mounted() {
-
+    beforeCreate() {
       let redirect_url = this.$cookie.get('redirect_url');
       if (redirect_url) {
-        console.log(redirect_url)
         this.$cookie.delete('redirect_url')
         let url = redirect_url.split('"')
         window.location.href = url[url.length - 2]
       }
+    },
+    mounted() {
 
         let already_selected = this.$cookie.get('lang');
 

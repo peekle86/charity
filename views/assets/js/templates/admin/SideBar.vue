@@ -55,20 +55,22 @@ export default {
             return true;
         },
         logout () {
-            Vue.axios.get('/logout').then(res => {
-                this.$router.go(this.$router.currentRoute);
-            })
+            Vue.axios.get('/logout')
+          this.$router.push('/login');
         },
     },
     mounted() {
         Vue.axios.get('/currentuser').then(res => {
-                Vue.axios
-                    .get('/users/'+res.data.id)
-                    .then(res => {
-                        this.pro = res.data.pro
-                    });
-            }
-        );
+          if (res.data.id) {
+            Vue.axios
+                .get('/users/' + res.data.id)
+                .then(res => {
+                  this.pro = res.data.pro
+                });
+          } else {
+            this.$router.push('/login')
+          }
+        });
     },
     components: {
     

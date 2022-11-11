@@ -76,14 +76,18 @@ class AdminController extends Controller
     /**
      * Displays homepage.
      *
-     * @return string
+     * @return mixed
      */
     public function actionIndex()
     {
 
         $this->layout = 'admin';
 
-        return $this->render('admin');
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('/login');
+        }
+
+        return $this->redirect('/dashboard');
     }
 
 
